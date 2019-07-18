@@ -213,6 +213,7 @@ struct MuonData
 
   //Muon position at GE11
 	
+  float stripangle_topology[2];
   float stripangle_test[2];	
   float cos_stripangle_test[2];
   float sin_stripangle_test[2];
@@ -337,7 +338,8 @@ void MuonData::init()
   ncscLct = 0;
 
   for (int i=0; i<2; ++i){
-	  
+	
+    stripangle_topology[i] = 99999;
     stripangle_test[i] = 99999;	
     cos_stripangle_test[i] = 99999;
     sin_stripangle_test[i] = 99999;
@@ -557,6 +559,7 @@ TTree* MuonData::book(TTree *t)
   edm::Service< TFileService > fs;
   t = fs->make<TTree>("MuonData", "MuonData");
 	
+  t->Branch("stripangle_topology", stripangle_topology, "stripangle_topology[2]/F");
   t->Branch("stripangle_test", stripangle_test, "stripangle_test[2]/F");
   t->Branch("cos_stripangle_test", cos_stripangle_test, "cos_stripangle_test[2]/F");
   t->Branch("sin_stripangle_test", sin_stripangle_test, "sin_stripangle_test[2]/F");
@@ -1234,7 +1237,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		      data_.rechit_propinner_RdPhi_GE11[gemid.layer()-1] = cosAngle * (pos_inner.x() - lp_flipped.x()) + sinAngle * (pos_inner.y() + deltay_roll);
 		      data_.rechit_strip_GE11[gemid.layer()-1] = strip_flipped;
 			    
-			    
+		      data_.stripangle_topology[gemid.layer()-1] = etaPart->specificTopology().stripAngle(strip_flipped)
 		      data_.stripangle_test[gemid.layer()-1] = stripAngle_flipped;
 		      data_.cos_stripangle_test[gemid.layer()-1] = cosAngle;
 		      data_.sin_stripangle_test[gemid.layer()-1] = sinAngle;
@@ -1265,7 +1268,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		      data_.rechit_strip_GE11[gemid.layer()-1] = strip;
 			    
 			    
-			    
+		      data_.stripangle_topology[gemid.layer()-1] = etaPart->specificTopology().stripAngle(strip);
 		      data_.stripangle_test[gemid.layer()-1] = stripAngle;
 		      data_.cos_stripangle_test[gemid.layer()-1] = cosAngle;
 		      data_.sin_stripangle_test[gemid.layer()-1] = sinAngle;
