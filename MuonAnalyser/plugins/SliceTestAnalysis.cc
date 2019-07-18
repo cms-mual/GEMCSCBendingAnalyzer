@@ -212,6 +212,14 @@ struct MuonData
   //Muon position at GE11
 
   //Muon position at GE11
+	
+  float stripangle_test[2];	
+  float cos_stripangle_test[2];
+  float sin_stripangle_test[2];
+  float stand_RdPhi_minus_GE11[2];
+  float gt_RdPhi_minus_GE11[2];
+  float inner_RdPhi_minus_GE11[2];
+
   bool isGood_GE11[2];
   int roll_rechitGE11[2];
   int chamber_GE11[2];
@@ -329,6 +337,14 @@ void MuonData::init()
   ncscLct = 0;
 
   for (int i=0; i<2; ++i){
+	  
+    stripangle_test[i] = 99999;	
+    cos_stripangle_test[i] = 99999;
+    sin_stripangle_test[i] = 99999;
+    stand_RdPhi_minus_GE11[i] = 99999;
+    gt_RdPhi_minus_GE11[i] = 99999;
+    inner_RdPhi_minus_GE11[i] = 99999;
+	  
     has_GE11[i] = 0;
     has_propGE11[i] = false;
     middle_perp_GE11[i] = -999999;
@@ -540,7 +556,14 @@ TTree* MuonData::book(TTree *t)
 {
   edm::Service< TFileService > fs;
   t = fs->make<TTree>("MuonData", "MuonData");
-
+	
+  t->Branch("stripangle_test", stripangle_test, "stripangle_test[2]/F");
+  t->Branch("cos_stripangle_test", cos_stripangle_test, "cos_stripangle_test[2]/F");
+  t->Branch("sin_stripangle_test", sin_stripangle_test, "sin_stripangle_test[2]/F");
+  t->Branch("stand_RdPhi_minus_GE11", stand_RdPhi_minus_GE11, "stand_RdPhi_minus_GE11[2]/F");
+  t->Branch("gt_RdPhi_minus_GE11", gt_RdPhi_minus_GE11, "gt_RdPhi_minus_GE11[2]/F");
+  t->Branch("inner_RdPhi_minus_GE11", inner_RdPhi_minus_GE11', "inner_RdPhi_minus_GE11[2]/F");
+	    
   t->Branch("lumi", &lumi);
   t->Branch("run", &run);
   t->Branch("event", &event);
@@ -1210,6 +1233,16 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		      data_.rechit_propgt_RdPhi_GE11[gemid.layer()-1] = cosAngle * (pos_gt.x() - lp_flipped.x()) + sinAngle * (pos_gt.y() + deltay_roll);
 		      data_.rechit_propinner_RdPhi_GE11[gemid.layer()-1] = cosAngle * (pos_inner.x() - lp_flipped.x()) + sinAngle * (pos_inner.y() + deltay_roll);
 		      data_.rechit_strip_GE11[gemid.layer()-1] = strip_flipped;
+			    
+			    
+		      data_.stripangle_test[gemid.layer()-1] = stripAngle_flipped;
+		      data_.cos_stripangle_test[gemid.layer()-1] = cosAngle;
+		      data_.sin_stripangle_test[gemid.layer()-1] = sinAngle;
+		      data_.stand_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos.x() - lp_flipped.x()) + sinAngle * (pos.y() + deltay_roll);
+		      data_.gt_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_gt.x() - lp_flipped.x()) + sinAngle * (pos_gt.y() + deltay_roll);
+		      data_.inner_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_inner.x() - lp_flipped.x()) + sinAngle * (pos_inner.y() + deltay_roll);
+			    
+			    
 		      //std::cout << "dX "<< data_.rechit_prop_dX_GE11[gemid.layer()-1]<<" dX for alignment(ST) "<< data_.rechit_prop_RdPhi_GE11[gemid.layer()-1]<<" dX for alignment(Track) "<<data_.rechit_propinner_RdPhi_GE11[gemid.layer()-1] << std::endl;
 		      data_.rechit_phi_GE11[gemid.layer()-1] = etaPart->toGlobal(lp_flipped).phi();
 		      data_.rechit_eta_GE11[gemid.layer()-1] = etaPart->toGlobal(lp_flipped).eta();
@@ -1230,6 +1263,18 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		      data_.rechit_propinner_RdPhi_GE11[gemid.layer()-1] = cosAngle * (pos_inner.x() - (hit)->localPosition().x()) + sinAngle * (pos_inner.y() + deltay_roll);
 		      data_.rechit_stripangle_GE11[gemid.layer()-1] = stripAngle;
 		      data_.rechit_strip_GE11[gemid.layer()-1] = strip;
+			    
+			    
+			    
+		      data_.stripangle_test[gemid.layer()-1] = stripAngle;
+		      data_.cos_stripangle_test[gemid.layer()-1] = cosAngle;
+		      data_.sin_stripangle_test[gemid.layer()-1] = sinAngle;
+		      data_.stand_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos.x() - (hit)->localPosition().x()) + sinAngle * (pos.y() + deltay_roll);
+		      data_.gt_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_gt.x() - (hit)->localPosition().x()) + sinAngle * (pos_gt.y() + deltay_roll);
+		      data_.inner_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_inner.x() - (hit)->localPosition().x()) + sinAngle * (pos_inner.y() + deltay_roll);
+			    
+			    
+			    
 		      //std::cout << "dX "<< data_.rechit_prop_dX_GE11[gemid.layer()-1]<<" dX for alignment(ST) "<< data_.rechit_prop_RdPhi_GE11[gemid.layer()-1]<<" dX for alignment(Track) "<<data_.rechit_propinner_RdPhi_GE11[gemid.layer()-1] << std::endl;
 		      data_.rechit_phi_GE11[gemid.layer()-1] = etaPart->toGlobal((hit)->localPosition()).phi();
 		      data_.rechit_eta_GE11[gemid.layer()-1] = etaPart->toGlobal((hit)->localPosition()).eta();
