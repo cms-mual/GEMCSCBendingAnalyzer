@@ -1237,7 +1237,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		      data_.rechit_propinner_RdPhi_GE11[gemid.layer()-1] = cosAngle * (pos_inner.x() - lp_flipped.x()) + sinAngle * (pos_inner.y() + deltay_roll);
 		      data_.rechit_strip_GE11[gemid.layer()-1] = strip_flipped;
 			    
-		      data_.stripangle_topology[gemid.layer()-1] = etaPart->specificTopology().stripAngle(strip_flipped)
+		      data_.stripangle_topology[gemid.layer()-1] = etaPart->specificTopology().stripAngle(strip_flipped);
 		      data_.stripangle_test[gemid.layer()-1] = stripAngle_flipped;
 		      data_.cos_stripangle_test[gemid.layer()-1] = cosAngle;
 		      data_.sin_stripangle_test[gemid.layer()-1] = sinAngle;
