@@ -562,7 +562,7 @@ TTree* MuonData::book(TTree *t)
   t->Branch("sin_stripangle_test", sin_stripangle_test, "sin_stripangle_test[2]/F");
   t->Branch("stand_RdPhi_minus_GE11", stand_RdPhi_minus_GE11, "stand_RdPhi_minus_GE11[2]/F");
   t->Branch("gt_RdPhi_minus_GE11", gt_RdPhi_minus_GE11, "gt_RdPhi_minus_GE11[2]/F");
-  t->Branch("inner_RdPhi_minus_GE11", inner_RdPhi_minus_GE11', "inner_RdPhi_minus_GE11[2]/F");
+  t->Branch("inner_RdPhi_minus_GE11", inner_RdPhi_minus_GE11, "inner_RdPhi_minus_GE11[2]/F");
 	    
   t->Branch("lumi", &lumi);
   t->Branch("run", &run);
