@@ -1238,9 +1238,9 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		      data_.stripangle_test[gemid.layer()-1] = stripAngle_flipped;
 		      data_.cos_stripangle_test[gemid.layer()-1] = cosAngle;
 		      data_.sin_stripangle_test[gemid.layer()-1] = sinAngle;
-		      data_.stand_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos.x() - lp_flipped.x()) + sinAngle * (pos.y() + deltay_roll);
-		      data_.gt_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_gt.x() - lp_flipped.x()) + sinAngle * (pos_gt.y() + deltay_roll);
-		      data_.inner_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_inner.x() - lp_flipped.x()) + sinAngle * (pos_inner.y() + deltay_roll);
+		      data_.stand_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos.x() - lp_flipped.x()) - sinAngle * (pos.y() + deltay_roll);
+		      data_.gt_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_gt.x() - lp_flipped.x()) - sinAngle * (pos_gt.y() + deltay_roll);
+		      data_.inner_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_inner.x() - lp_flipped.x()) - sinAngle * (pos_inner.y() + deltay_roll);
 			    
 			    
 		      //std::cout << "dX "<< data_.rechit_prop_dX_GE11[gemid.layer()-1]<<" dX for alignment(ST) "<< data_.rechit_prop_RdPhi_GE11[gemid.layer()-1]<<" dX for alignment(Track) "<<data_.rechit_propinner_RdPhi_GE11[gemid.layer()-1] << std::endl;
@@ -1269,9 +1269,9 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		      data_.stripangle_test[gemid.layer()-1] = stripAngle;
 		      data_.cos_stripangle_test[gemid.layer()-1] = cosAngle;
 		      data_.sin_stripangle_test[gemid.layer()-1] = sinAngle;
-		      data_.stand_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos.x() - (hit)->localPosition().x()) + sinAngle * (pos.y() + deltay_roll);
-		      data_.gt_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_gt.x() - (hit)->localPosition().x()) + sinAngle * (pos_gt.y() + deltay_roll);
-		      data_.inner_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_inner.x() - (hit)->localPosition().x()) + sinAngle * (pos_inner.y() + deltay_roll);
+		      data_.stand_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos.x() - (hit)->localPosition().x()) - sinAngle * (pos.y() + deltay_roll);
+		      data_.gt_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_gt.x() - (hit)->localPosition().x()) - sinAngle * (pos_gt.y() + deltay_roll);
+		      data_.inner_RdPhi_minus_GE11[gemid.layer()-1] = cosAngle * (pos_inner.x() - (hit)->localPosition().x()) - sinAngle * (pos_inner.y() + deltay_roll);
 			    
 			    
 			    
