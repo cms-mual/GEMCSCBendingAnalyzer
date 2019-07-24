@@ -1129,7 +1129,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    strip = getCenterStripNumber_float(strip);
 	    LocalPoint lp_center = etaPart_ch->centreOfStrip(strip);
 	    //std::cout <<"prop muon lp "<< pos <<" center of strip lp "<< lp_center <<" strip "<< strip <<std::endl;
-	    data_.x_center_GE11[ch->id().layer()-1] = lp_center.x();
+	    data_.prop_localx_center_GE11[ch->id().layer()-1] = lp_center.x();
 	    data_.prop_strip_GE11[ch->id().layer()-1] = strip;
 	    data_.middle_perp_propGE11[ch->id().layer()-1] = etaPart_ch->toGlobal(lp_middle).perp();//middle in the roll of prop
 
