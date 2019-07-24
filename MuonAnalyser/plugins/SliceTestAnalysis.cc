@@ -254,6 +254,7 @@ struct MuonData
   float prop_perp_GE11[2];
   float prop_localx_GE11[2];//projected position in GE11
   float prop_localy_GE11[2];
+  float prop_localphi_GE11[2];
   float prop_localx_center_GE11[2];//projected position in GE11
 
   float propgt_phi_GE11[2];//phi,eta from GE11 rechits
@@ -371,6 +372,7 @@ void MuonData::init()
     prop_y_GE11[i] = 999999.0;
     prop_localx_GE11[i] = 999999.0;
     prop_localy_GE11[i] = 999999.0;
+    prop_localphi_GE11[i] = 999999.0;
     prop_r_GE11[i] = 999999.0;
     prop_perp_GE11[i] = 999999.0;
     prop_localx_center_GE11[i]=999999.0;
@@ -679,6 +681,7 @@ TTree* MuonData::book(TTree *t)
   t->Branch("prop_perp_GE11", prop_perp_GE11, "prop_perp_GE11[2]/F");
   t->Branch("prop_localx_GE11",prop_localx_GE11,"prop_localx_GE11[2]/F");
   t->Branch("prop_localy_GE11",prop_localy_GE11,"prop_localy_GE11[2]/F");
+  t->Branch("prop_localphi_GE11", prop_localphi_GE11, "prop_localphi_GE11[2]/F");
   t->Branch("propgt_phi_GE11", propgt_phi_GE11, "propgt_phi_GE11[2]/F");
   t->Branch("propgt_eta_GE11", propgt_eta_GE11, "propgt_eta_GE11[2]/F");
   t->Branch("propgt_x_GE11",   propgt_x_GE11,   "propgt_x_GE11[2]/F");
@@ -1093,6 +1096,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.prop_perp_GE11[ch->id().layer()-1]   = tsosGP.perp();
 	    data_.prop_localx_GE11[ch->id().layer()-1] = pos.x();
 	    data_.prop_localy_GE11[ch->id().layer()-1] = pos.y();
+	    data_.prop_localphi_GE11[ch->id().layer()-1] = pos.phi();
 	    
 	    data_.propgt_phi_GE11[ch->id().layer()-1] = tsosGP_gt.phi();
 	    data_.propgt_eta_GE11[ch->id().layer()-1] = tsosGP_gt.eta();
@@ -1125,7 +1129,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    strip = getCenterStripNumber_float(strip);
 	    LocalPoint lp_center = etaPart_ch->centreOfStrip(strip);
 	    //std::cout <<"prop muon lp "<< pos <<" center of strip lp "<< lp_center <<" strip "<< strip <<std::endl;
-	    data_.prop_localx_center_GE11[ch->id().layer()-1] = lp_center.x();
+	    data_.x_center_GE11[ch->id().layer()-1] = lp_center.x();
 	    data_.prop_strip_GE11[ch->id().layer()-1] = strip;
 	    data_.middle_perp_propGE11[ch->id().layer()-1] = etaPart_ch->toGlobal(lp_middle).perp();//middle in the roll of prop
 
