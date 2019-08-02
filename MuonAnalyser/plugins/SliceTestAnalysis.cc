@@ -255,7 +255,11 @@ struct MuonData
   float prop_perp_GE11[2];
   float prop_localx_GE11[2];//projected position in GE11
   float prop_localy_GE11[2];
+<<<<<<< HEAD
   float prop_localphi_GE11[2];
+=======
+  float prop_localphi_GE11[2]
+>>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
   float prop_localx_center_GE11[2];//projected position in GE11
 
   float propgt_phi_GE11[2];//phi,eta from GE11 rechits
@@ -376,7 +380,11 @@ void MuonData::init()
     prop_y_GE11[i] = 999999.0;
     prop_localx_GE11[i] = 999999.0;
     prop_localy_GE11[i] = 999999.0;
+<<<<<<< HEAD
     prop_localphi_GE11[i] = 999999.0;
+=======
+    prop_localphi_GE11[i] = 9999999.0;
+>>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
     prop_r_GE11[i] = 999999.0;
     prop_perp_GE11[i] = 999999.0;
     prop_localx_center_GE11[i]=999999.0;
@@ -389,7 +397,11 @@ void MuonData::init()
     propgt_perp_GE11[i] = 999999.0;
     propgt_localx_GE11[i] = 999999.0;
     propgt_localy_GE11[i] = 999999.0;
+<<<<<<< HEAD
     propgt_localphi_GE11[i] = 999999.0;
+=======
+    propgt_localphi_GE11[i] = 9999999.0;
+>>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
     propgt_localx_center_GE11[i]=999999.0;
     propinner_phi_GE11[i] = -9.0;
     propinner_eta_GE11[i] = -9.0;
@@ -399,7 +411,11 @@ void MuonData::init()
     propinner_perp_GE11[i] = 999999.0;
     propinner_localx_GE11[i] = 999999.0;
     propinner_localy_GE11[i] = 999999.0;
+<<<<<<< HEAD
     propinner_localphi_GE11[i] = 999999.0;
+=======
+    propinner_localphi_GE11[i] = 9999999.0;
+>>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
     propinner_localx_center_GE11[i]=999999.0;
     rechit_prop_dR_GE11[i] = 9999;
     rechit_prop_dX_GE11[i] = 9999;
@@ -697,7 +713,11 @@ TTree* MuonData::book(TTree *t)
   t->Branch("propgt_perp_GE11",   propgt_perp_GE11,   "propgt_perp_GE11[2]/F");
   t->Branch("propgt_localx_GE11",propgt_localx_GE11,"propgt_localx_GE11[2]/F");
   t->Branch("propgt_localy_GE11",propgt_localy_GE11,"propgt_localy_GE11[2]/F");
+<<<<<<< HEAD
   t->Branch("propgt_localphi_GE11", propgt_localphi_GE11, "propgt_localphi_GE11[2]/F"); 
+=======
+  t->Branch("propgt_localphi_GE11", propgt_localphi_GE11, "propgt_localphi_GE11[2]/F");
+>>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
   t->Branch("propinner_phi_GE11", propinner_phi_GE11, "propinner_phi_GE11[2]/F");
   t->Branch("propinner_eta_GE11", propinner_eta_GE11, "propinner_eta_GE11[2]/F");
   t->Branch("propinner_x_GE11",   propinner_x_GE11,   "propinner_x_GE11[2]/F");
@@ -1106,6 +1126,10 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.prop_localx_GE11[ch->id().layer()-1] = pos.x();
 	    data_.prop_localy_GE11[ch->id().layer()-1] = pos.y();
 	    data_.prop_localphi_GE11[ch->id().layer()-1] = asin(pos.x()/(pow(pow(tsosGP.x(), 2) + pow(tsosGP.y(), 2), .5)));
+<<<<<<< HEAD
+=======
+            cout << "local phi is" << asin(pos.x()/(pow(pow(tsosGP.x(), 2) + pow(tsosGP.y(), 2), .5))) << endl;	   
+>>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
  
 	    data_.propgt_phi_GE11[ch->id().layer()-1] = tsosGP_gt.phi();
 	    data_.propgt_eta_GE11[ch->id().layer()-1] = tsosGP_gt.eta();
