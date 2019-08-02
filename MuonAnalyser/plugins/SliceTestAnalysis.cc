@@ -235,6 +235,7 @@ struct MuonData
   float rechit_localx_GE11[2];//rechit position in GE11
   float rechit_alignedlocalx_GE11[2];//rechit position in GE11
   float rechit_localy_GE11[2];
+  float rechit_localphi_GE11[2];
   bool rechit_used_GE11[2];
   int rechit_BX_GE11[2];//-1
   int rechit_firstClusterStrip_GE11[2];//-1
@@ -254,7 +255,7 @@ struct MuonData
   float prop_perp_GE11[2];
   float prop_localx_GE11[2];//projected position in GE11
   float prop_localy_GE11[2];
-  float prop_localphi_GE11[2]; 		// Devin aedded 0725
+  float prop_localphi_GE11[2];
   float prop_localx_center_GE11[2];//projected position in GE11
 
   float propgt_phi_GE11[2];//phi,eta from GE11 rechits
@@ -265,7 +266,7 @@ struct MuonData
   float propgt_perp_GE11[2];
   float propgt_localx_GE11[2];//projected position in GE11
   float propgt_localy_GE11[2];
-  float propgt_localphi_GE11[2];          // Devin aedded 0725
+  float propgt_localphi_GE11[2];
   float propgt_localx_center_GE11[2];//projected position in GE11
   float propinner_phi_GE11[2];//phi,eta from GE11 rechits
   float propinner_eta_GE11[2];
@@ -275,7 +276,7 @@ struct MuonData
   float propinner_perp_GE11[2];
   float propinner_localx_GE11[2];//projected position in GE11
   float propinner_localy_GE11[2];
-  float propinner_localphi_GE11[2];          // Devin aedded 0725
+  float propinner_localphi_GE11[2];
   float propinner_localx_center_GE11[2];//projected position in GE11
 
   float prop_strip_GE11[2];//projected position in GE11
@@ -362,6 +363,7 @@ void MuonData::init()
     rechit_y_GE11[i] = 99999.0;
     rechit_localx_GE11[i] = 99999.0;
     rechit_localy_GE11[i] = 99999.0;
+    rechit_localphi_GE11[i] = 99999.0;
     rechit_r_GE11[i] = 99999.0;
     rechit_perp_GE11[i] = 99999.0;
     rechit_stripangle_GE11[i] = 99999.0;
@@ -374,7 +376,7 @@ void MuonData::init()
     prop_y_GE11[i] = 999999.0;
     prop_localx_GE11[i] = 999999.0;
     prop_localy_GE11[i] = 999999.0;
-    prop_localphi_GE11[i] = 999999.0; 		// Devin added 0725
+    prop_localphi_GE11[i] = 999999.0;
     prop_r_GE11[i] = 999999.0;
     prop_perp_GE11[i] = 999999.0;
     prop_localx_center_GE11[i]=999999.0;
@@ -387,7 +389,7 @@ void MuonData::init()
     propgt_perp_GE11[i] = 999999.0;
     propgt_localx_GE11[i] = 999999.0;
     propgt_localy_GE11[i] = 999999.0;
-    propgt_localphi_GE11[i] = 999999.0;		// Devin added 0725
+    propgt_localphi_GE11[i] = 999999.0;
     propgt_localx_center_GE11[i]=999999.0;
     propinner_phi_GE11[i] = -9.0;
     propinner_eta_GE11[i] = -9.0;
@@ -397,7 +399,7 @@ void MuonData::init()
     propinner_perp_GE11[i] = 999999.0;
     propinner_localx_GE11[i] = 999999.0;
     propinner_localy_GE11[i] = 999999.0;
-    propinner_localphi_GE11[i] = 999999.0;	// Devin added 0725
+    propinner_localphi_GE11[i] = 999999.0;
     propinner_localx_center_GE11[i]=999999.0;
     rechit_prop_dR_GE11[i] = 9999;
     rechit_prop_dX_GE11[i] = 9999;
@@ -669,6 +671,7 @@ TTree* MuonData::book(TTree *t)
   t->Branch("rechit_localx_GE11",rechit_localx_GE11,"rechit_localx_GE11[2]/F");
   t->Branch("rechit_alignedlocalx_GE11",rechit_alignedlocalx_GE11,"rechit_alignedlocalx_GE11[2]/F");
   t->Branch("rechit_localy_GE11",rechit_localy_GE11,"rechit_localy_GE11[2]/F");
+  t->Branch("rechit_localphi_GE11", rechit_localphi_GE11, "rechit_localphi_GE11[2]/F");
   t->Branch("rechit_used_GE11", rechit_used_GE11, "rechit_used_GE11[2]/B");
   t->Branch("rechit_BX_GE11", rechit_BX_GE11, "rechit_BX_GE11[2]/I");
   t->Branch("rechit_firstClusterStrip_GE11", rechit_firstClusterStrip_GE11, "rechit_firstClusterStrip_GE11[2]/I");
@@ -685,7 +688,7 @@ TTree* MuonData::book(TTree *t)
   t->Branch("prop_perp_GE11", prop_perp_GE11, "prop_perp_GE11[2]/F");
   t->Branch("prop_localx_GE11",prop_localx_GE11,"prop_localx_GE11[2]/F");
   t->Branch("prop_localy_GE11",prop_localy_GE11,"prop_localy_GE11[2]/F");
-  t->Branch("prop_localphi_GE11", prop_localphi_GE11, "prop_localphi_GE11[2]/F");    // I added this 07/25
+  t->Branch("prop_localphi_GE11", prop_localphi_GE11, "prop_localphi_GE11[2]/F");
   t->Branch("propgt_phi_GE11", propgt_phi_GE11, "propgt_phi_GE11[2]/F");
   t->Branch("propgt_eta_GE11", propgt_eta_GE11, "propgt_eta_GE11[2]/F");
   t->Branch("propgt_x_GE11",   propgt_x_GE11,   "propgt_x_GE11[2]/F");
@@ -694,7 +697,7 @@ TTree* MuonData::book(TTree *t)
   t->Branch("propgt_perp_GE11",   propgt_perp_GE11,   "propgt_perp_GE11[2]/F");
   t->Branch("propgt_localx_GE11",propgt_localx_GE11,"propgt_localx_GE11[2]/F");
   t->Branch("propgt_localy_GE11",propgt_localy_GE11,"propgt_localy_GE11[2]/F");
-  t->Branch("propgt_localphi_GE11", propgt_localphi_GE11, "propgt_localphi_GE11[2]/F");    // I added this 07/25
+  t->Branch("propgt_localphi_GE11", propgt_localphi_GE11, "propgt_localphi_GE11[2]/F"); 
   t->Branch("propinner_phi_GE11", propinner_phi_GE11, "propinner_phi_GE11[2]/F");
   t->Branch("propinner_eta_GE11", propinner_eta_GE11, "propinner_eta_GE11[2]/F");
   t->Branch("propinner_x_GE11",   propinner_x_GE11,   "propinner_x_GE11[2]/F");
@@ -703,7 +706,7 @@ TTree* MuonData::book(TTree *t)
   t->Branch("propinner_perp_GE11",   propinner_perp_GE11,   "propinner_perp_GE11[2]/F");
   t->Branch("propinner_localx_GE11",propinner_localx_GE11,"propinner_localx_GE11[2]/F");
   t->Branch("propinner_localy_GE11",propinner_localy_GE11,"propinner_localy_GE11[2]/F");
-  t->Branch("propinner_localphi_GE11", propinner_localphi_GE11, "propinner_localphi_GE11[2]/F");    // I added this 07/25
+  t->Branch("propinner_localphi_GE11", propinner_localphi_GE11, "propinner_localphi_GE11[2]/F");
   t->Branch("rechit_prop_dR_GE11", rechit_prop_dR_GE11, "rechit_prop_dR_GE11[2]/F");
   t->Branch("rechit_prop_dX_GE11", rechit_prop_dX_GE11, "rechit_prop_dX_GE11[2]/F");
   t->Branch("rechit_prop_RdPhi_GE11", rechit_prop_RdPhi_GE11, "rechit_prop_RdPhi_GE11[2]/F");
@@ -1102,8 +1105,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.prop_perp_GE11[ch->id().layer()-1]   = tsosGP.perp();
 	    data_.prop_localx_GE11[ch->id().layer()-1] = pos.x();
 	    data_.prop_localy_GE11[ch->id().layer()-1] = pos.y();
-	    data_.prop_localphi_GE11[ch->id().layer()-1] = asin(pos.x()/(pow(pow(tsosGP.x(), 2) + pow(tsosGP.y(), 2), .5))); 		// Devin added 0725
-            cout << "local phi is" << asin(pos.x()/(pow(pow(tsosGP.x(), 2) + pow(tsosGP.y(), 2), .5))) << endl;	   
+	    data_.prop_localphi_GE11[ch->id().layer()-1] = asin(pos.x()/(pow(pow(tsosGP.x(), 2) + pow(tsosGP.y(), 2), .5)));
  
 	    data_.propgt_phi_GE11[ch->id().layer()-1] = tsosGP_gt.phi();
 	    data_.propgt_eta_GE11[ch->id().layer()-1] = tsosGP_gt.eta();
@@ -1113,7 +1115,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.propgt_perp_GE11[ch->id().layer()-1]   = tsosGP_gt.perp();
 	    data_.propgt_localx_GE11[ch->id().layer()-1] = pos_gt.x();
 	    data_.propgt_localy_GE11[ch->id().layer()-1] = pos_gt.y();
-            data_.propgt_localphi_GE11[ch->id().layer()-1] = asin(pos_gt.x()/(pow(pow(tsosGP_gt.x(), 2) + pow(tsosGP_gt.y(), 2), .5)));            // Devin added 0725
+            data_.propgt_localphi_GE11[ch->id().layer()-1] = asin(pos_gt.x()/(pow(pow(tsosGP_gt.x(), 2) + pow(tsosGP_gt.y(), 2), .5)));
 
 	    data_.propinner_phi_GE11[ch->id().layer()-1] = tsosGP_inner.phi();
 	    data_.propinner_eta_GE11[ch->id().layer()-1] = tsosGP_inner.eta();
@@ -1123,7 +1125,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.propinner_perp_GE11[ch->id().layer()-1]   = tsosGP_inner.perp();
 	    data_.propinner_localx_GE11[ch->id().layer()-1] = pos_inner.x();
 	    data_.propinner_localy_GE11[ch->id().layer()-1] = pos_inner.y();
-            data_.propinner_localphi_GE11[ch->id().layer()-1] = asin(pos_inner.x()/(pow(pow(tsosGP_inner.x(), 2) + pow(tsosGP_inner.y(), 2), .5)));            // Devin added 0725
+            data_.propinner_localphi_GE11[ch->id().layer()-1] = asin(pos_inner.x()/(pow(pow(tsosGP_inner.x(), 2) + pow(tsosGP_inner.y(), 2), .5)));
 
 	    const auto& etaPart_ch = GEMGeometry_->etaPartition(ch->id());
 	    LocalPoint lp_middle = etaPart_ch->centreOfStrip(etaPart_ch->nstrips()/2);
@@ -1272,6 +1274,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		      data_.rechit_y_GE11[gemid.layer()-1] = etaPart->toGlobal(lp_flipped).y();
 		      data_.rechit_localx_GE11[gemid.layer()-1] = lp_flipped.x();
 		      data_.rechit_localy_GE11[gemid.layer()-1] = lp_flipped.y();
+                      data_.rechit_localphi_GE11[ch->id().layer()-1] = asin(lp_flipped.x()/(pow(pow(etaPart->toGlobal(lp_flipped).x(), 2) + pow(etaPart->toGlobal(lp_flipped).y(), 2), .5)));
 		      data_.rechit_r_GE11[gemid.layer()-1] = etaPart->toGlobal(lp_flipped).mag();
 		      data_.rechit_perp_GE11[gemid.layer()-1] = etaPart->toGlobal(lp_flipped).perp();
 		      data_.rechit_stripangle_GE11[gemid.layer()-1] = stripAngle_flipped;
@@ -1306,6 +1309,7 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		      data_.rechit_perp_GE11[gemid.layer()-1] = etaPart->toGlobal((hit)->localPosition()).perp();
 		      data_.rechit_localx_GE11[gemid.layer()-1] = (hit)->localPosition().x();
 		      data_.rechit_localy_GE11[gemid.layer()-1] = (hit)->localPosition().y();
+                      data_.rechit_localphi_GE11[ch->id().layer()-1] = asin((hit)->localPosition().x()/(pow(pow(etaPart->toGlobal((hit)->localPosition()).x(), 2) + pow(etaPart->toGlobal((hit)->localPosition()).y(), 2), .5)));
 		    }
 		    data_.rechit_prop_dphi_GE11[gemid.layer()-1] = reco::deltaPhi(tsosGP.phi(), data_.rechit_phi_GE11[gemid.layer()-1]);
 		    if (applyGEMalignment_){
