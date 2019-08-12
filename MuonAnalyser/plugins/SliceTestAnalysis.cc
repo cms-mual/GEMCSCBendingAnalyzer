@@ -255,11 +255,8 @@ struct MuonData
   float prop_perp_GE11[2];
   float prop_localx_GE11[2];//projected position in GE11
   float prop_localy_GE11[2];
-<<<<<<< HEAD
-  float prop_localphi_GE11[2];
-=======
-  float prop_localphi_GE11[2]
->>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
+  float prop_localphi_rad_GE11[2];
+  float prop_localphi_deg_GE11[2];
   float prop_localx_center_GE11[2];//projected position in GE11
 
   float propgt_phi_GE11[2];//phi,eta from GE11 rechits
@@ -270,7 +267,8 @@ struct MuonData
   float propgt_perp_GE11[2];
   float propgt_localx_GE11[2];//projected position in GE11
   float propgt_localy_GE11[2];
-  float propgt_localphi_GE11[2];
+  float propgt_localphi_deg_GE11[2];
+  float propgt_localphi_rad_GE11[2];
   float propgt_localx_center_GE11[2];//projected position in GE11
   float propinner_phi_GE11[2];//phi,eta from GE11 rechits
   float propinner_eta_GE11[2];
@@ -280,7 +278,8 @@ struct MuonData
   float propinner_perp_GE11[2];
   float propinner_localx_GE11[2];//projected position in GE11
   float propinner_localy_GE11[2];
-  float propinner_localphi_GE11[2];
+  float propinner_localphi_rad_GE11[2];
+  float propinner_localphi_deg_GE11[2];
   float propinner_localx_center_GE11[2];//projected position in GE11
 
   float prop_strip_GE11[2];//projected position in GE11
@@ -309,6 +308,10 @@ struct MuonData
   
   //propagation
   float dphi_propCSC_propGE11[2];//average CSC phi - GEM phi for each GEM layer
+
+  bool prop_has_fidcut_GE11[2];
+  bool gt_has_fidcut_GE11[2];
+  bool inner_has_fidcut_GE11[2];
   
 };
 
@@ -357,6 +360,9 @@ void MuonData::init()
     inner_RdPhi_minus_GE11[i] = 99999;
 	  
     has_GE11[i] = 0;
+    prop_has_fidcut_GE11[i] = 0;
+    gt_has_fidcut_GE11[i] = 0;
+    inner_has_fidcut_GE11[i] = 0;
     has_propGE11[i] = false;
     middle_perp_propGE11[i] = -999999;
     middle_perp_rechitGE11[i] = -999999;
@@ -380,11 +386,9 @@ void MuonData::init()
     prop_y_GE11[i] = 999999.0;
     prop_localx_GE11[i] = 999999.0;
     prop_localy_GE11[i] = 999999.0;
-<<<<<<< HEAD
-    prop_localphi_GE11[i] = 999999.0;
-=======
-    prop_localphi_GE11[i] = 9999999.0;
->>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
+    prop_localphi_rad_GE11[i] = 9999999.0;
+    prop_localphi_deg_GE11[i] = 9999999.0;
+    prop_localx_center_GE11[i] = 999999.0;
     prop_r_GE11[i] = 999999.0;
     prop_perp_GE11[i] = 999999.0;
     prop_localx_center_GE11[i]=999999.0;
@@ -397,11 +401,8 @@ void MuonData::init()
     propgt_perp_GE11[i] = 999999.0;
     propgt_localx_GE11[i] = 999999.0;
     propgt_localy_GE11[i] = 999999.0;
-<<<<<<< HEAD
-    propgt_localphi_GE11[i] = 999999.0;
-=======
-    propgt_localphi_GE11[i] = 9999999.0;
->>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
+    propgt_localphi_rad_GE11[i] = 9999999.0;
+    propgt_localphi_deg_GE11[i] = 9999999.0;
     propgt_localx_center_GE11[i]=999999.0;
     propinner_phi_GE11[i] = -9.0;
     propinner_eta_GE11[i] = -9.0;
@@ -411,11 +412,8 @@ void MuonData::init()
     propinner_perp_GE11[i] = 999999.0;
     propinner_localx_GE11[i] = 999999.0;
     propinner_localy_GE11[i] = 999999.0;
-<<<<<<< HEAD
-    propinner_localphi_GE11[i] = 999999.0;
-=======
-    propinner_localphi_GE11[i] = 9999999.0;
->>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
+    propinner_localphi_rad_GE11[i] = 9999999.0;
+    propinner_localphi_deg_GE11[i] = 9999999.0;
     propinner_localx_center_GE11[i]=999999.0;
     rechit_prop_dR_GE11[i] = 9999;
     rechit_prop_dX_GE11[i] = 9999;
@@ -672,6 +670,9 @@ TTree* MuonData::book(TTree *t)
 
   t->Branch("isGood_GE11", isGood_GE11, "isGood_GE11[2]/B");
   t->Branch("has_GE11", has_GE11, "has_GE11[2]/B");
+  t->Branch("prop_has_fidcut_GE11", prop_has_fidcut_GE11, "prop_has_fidcut_GE11[2]/B");
+  t->Branch("gt_has_fidcut_GE11", gt_has_fidcut_GE11, "gt_has_fidcut_GE11[2]/B");
+  t->Branch("inner_has_fidcut_GE11", inner_has_fidcut_GE11, "inner_has_fidcut_GE11[2]/B");
   t->Branch("roll_rechitGE11", roll_rechitGE11, "roll_rechitGE11[2]/I");
   t->Branch("chamber_GE11", chamber_GE11, "chamber_GE11[2]/I");
   t->Branch("middle_perp_propGE11", middle_perp_propGE11, "middle_perp_propGE11[2]/F");  // Is this right?
@@ -704,7 +705,8 @@ TTree* MuonData::book(TTree *t)
   t->Branch("prop_perp_GE11", prop_perp_GE11, "prop_perp_GE11[2]/F");
   t->Branch("prop_localx_GE11",prop_localx_GE11,"prop_localx_GE11[2]/F");
   t->Branch("prop_localy_GE11",prop_localy_GE11,"prop_localy_GE11[2]/F");
-  t->Branch("prop_localphi_GE11", prop_localphi_GE11, "prop_localphi_GE11[2]/F");
+  t->Branch("prop_localphi_rad_GE11", prop_localphi_rad_GE11, "prop_localphi_rad_GE11[2]/F");
+  t->Branch("prop_localphi_deg_GE11", prop_localphi_deg_GE11, "prop_localphi_deg_GE11[2]/F");
   t->Branch("propgt_phi_GE11", propgt_phi_GE11, "propgt_phi_GE11[2]/F");
   t->Branch("propgt_eta_GE11", propgt_eta_GE11, "propgt_eta_GE11[2]/F");
   t->Branch("propgt_x_GE11",   propgt_x_GE11,   "propgt_x_GE11[2]/F");
@@ -713,11 +715,8 @@ TTree* MuonData::book(TTree *t)
   t->Branch("propgt_perp_GE11",   propgt_perp_GE11,   "propgt_perp_GE11[2]/F");
   t->Branch("propgt_localx_GE11",propgt_localx_GE11,"propgt_localx_GE11[2]/F");
   t->Branch("propgt_localy_GE11",propgt_localy_GE11,"propgt_localy_GE11[2]/F");
-<<<<<<< HEAD
-  t->Branch("propgt_localphi_GE11", propgt_localphi_GE11, "propgt_localphi_GE11[2]/F"); 
-=======
-  t->Branch("propgt_localphi_GE11", propgt_localphi_GE11, "propgt_localphi_GE11[2]/F");
->>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
+  t->Branch("propgt_localphi_rad_GE11", propgt_localphi_rad_GE11, "propgt_localphi_rad_GE11[2]/F"); 
+  t->Branch("propgt_localphi_deg_GE11", propgt_localphi_deg_GE11, "propgt_localphi_deg_GE11[2]/F");
   t->Branch("propinner_phi_GE11", propinner_phi_GE11, "propinner_phi_GE11[2]/F");
   t->Branch("propinner_eta_GE11", propinner_eta_GE11, "propinner_eta_GE11[2]/F");
   t->Branch("propinner_x_GE11",   propinner_x_GE11,   "propinner_x_GE11[2]/F");
@@ -726,7 +725,8 @@ TTree* MuonData::book(TTree *t)
   t->Branch("propinner_perp_GE11",   propinner_perp_GE11,   "propinner_perp_GE11[2]/F");
   t->Branch("propinner_localx_GE11",propinner_localx_GE11,"propinner_localx_GE11[2]/F");
   t->Branch("propinner_localy_GE11",propinner_localy_GE11,"propinner_localy_GE11[2]/F");
-  t->Branch("propinner_localphi_GE11", propinner_localphi_GE11, "propinner_localphi_GE11[2]/F");
+  t->Branch("propinner_localphi_rad_GE11", propinner_localphi_rad_GE11, "propinner_localphi_rad_GE11[2]/F");
+  t->Branch("propinner_localphi_deg_GE11", propinner_localphi_deg_GE11, "propinner_localphi_deg_GE11[2]/F");
   t->Branch("rechit_prop_dR_GE11", rechit_prop_dR_GE11, "rechit_prop_dR_GE11[2]/F");
   t->Branch("rechit_prop_dX_GE11", rechit_prop_dX_GE11, "rechit_prop_dX_GE11[2]/F");
   t->Branch("rechit_prop_RdPhi_GE11", rechit_prop_RdPhi_GE11, "rechit_prop_RdPhi_GE11[2]/F");
@@ -1125,12 +1125,14 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.prop_perp_GE11[ch->id().layer()-1]   = tsosGP.perp();
 	    data_.prop_localx_GE11[ch->id().layer()-1] = pos.x();
 	    data_.prop_localy_GE11[ch->id().layer()-1] = pos.y();
-	    data_.prop_localphi_GE11[ch->id().layer()-1] = asin(pos.x()/(pow(pow(tsosGP.x(), 2) + pow(tsosGP.y(), 2), .5)));
-<<<<<<< HEAD
-=======
-            cout << "local phi is" << asin(pos.x()/(pow(pow(tsosGP.x(), 2) + pow(tsosGP.y(), 2), .5))) << endl;	   
->>>>>>> 465d656ca49eac0155e70e4d41c7248e3c8566b4
- 
+
+            const LocalPoint temp(tsosGP.x(), tsosGP.y(), 0);
+            const LocalPoint local_coords(pos.x(), pos.y()+temp.mag());
+	    const float local_phi_rad = (3.14159265/2.) - local_coords.phi();
+	    const float local_phi_deg = 180*(local_phi_rad)/3.14159265;
+            data_.prop_localphi_rad_GE11[ch->id().layer()-1] = local_phi_rad;
+            data_.prop_localphi_deg_GE11[ch->id().layer()-1] = local_phi_deg;
+
 	    data_.propgt_phi_GE11[ch->id().layer()-1] = tsosGP_gt.phi();
 	    data_.propgt_eta_GE11[ch->id().layer()-1] = tsosGP_gt.eta();
 	    data_.propgt_x_GE11[ch->id().layer()-1]   = tsosGP_gt.x();
@@ -1139,7 +1141,12 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.propgt_perp_GE11[ch->id().layer()-1]   = tsosGP_gt.perp();
 	    data_.propgt_localx_GE11[ch->id().layer()-1] = pos_gt.x();
 	    data_.propgt_localy_GE11[ch->id().layer()-1] = pos_gt.y();
-            data_.propgt_localphi_GE11[ch->id().layer()-1] = asin(pos_gt.x()/(pow(pow(tsosGP_gt.x(), 2) + pow(tsosGP_gt.y(), 2), .5)));
+            const LocalPoint temp_gt(tsosGP_gt.x(), tsosGP_gt.y(), 0);
+	    const LocalPoint local_coords_gt(pos_gt.x(), pos_gt.y()+temp_gt.mag());
+	    const float local_phi_rad_gt = (3.14159265/2.) - local_coords_gt.phi();
+	    const float local_phi_deg_gt = 180*(local_phi_rad_gt)/3.14159265;
+	    data_.propgt_localphi_rad_GE11[ch->id().layer()-1] = local_phi_rad_gt;
+            data_.propgt_localphi_deg_GE11[ch->id().layer()-1] = local_phi_deg_gt;
 
 	    data_.propinner_phi_GE11[ch->id().layer()-1] = tsosGP_inner.phi();
 	    data_.propinner_eta_GE11[ch->id().layer()-1] = tsosGP_inner.eta();
@@ -1149,17 +1156,61 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.propinner_perp_GE11[ch->id().layer()-1]   = tsosGP_inner.perp();
 	    data_.propinner_localx_GE11[ch->id().layer()-1] = pos_inner.x();
 	    data_.propinner_localy_GE11[ch->id().layer()-1] = pos_inner.y();
-            data_.propinner_localphi_GE11[ch->id().layer()-1] = asin(pos_inner.x()/(pow(pow(tsosGP_inner.x(), 2) + pow(tsosGP_inner.y(), 2), .5)));
+            const LocalPoint temp_inner(tsosGP_inner.x(), tsosGP_inner.y(), 0);
+            const LocalPoint local_coords_inner(pos_inner.x(), pos_inner.y()+temp_inner.mag());
+	    const float local_phi_rad_inner = (3.14159265/2.) - local_coords_inner.phi();
+	    const float local_phi_deg_inner = 180*(local_phi_rad_inner)/3.14159265;
+            data_.propinner_localphi_rad_GE11[ch->id().layer()-1] = local_phi_rad_inner;
+	    data_.propinner_localphi_deg_GE11[ch->id().layer()-1] = local_phi_deg_inner;
+
+
 
 	    const auto& etaPart_ch = GEMGeometry_->etaPartition(ch->id());
 	    LocalPoint lp_middle = etaPart_ch->centreOfStrip(etaPart_ch->nstrips()/2);
 	    float strip = etaPart_ch->strip(pos);
+
+
+	    //Appling fidcut
+	    const float fidcut_angle = 0.008;
+	    const float cut_ang = .088 - fidcut_angle;
+	    const float fidcut_y = 5;
+	    const float cut_even_high = 250 - fidcut_y;
+	    const float cut_odd_high = 235 - fidcut_y;
+	    const float cut_low = 130 + fidcut_y;
+	    if(ch->id().chamber()%2 == 0){ //even
+	      if( fabs(local_phi_rad) < cut_ang && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_even_high){
+	        data_.prop_has_fidcut_GE11[ch->id().layer()-1] = 1;}
+              if( fabs(local_phi_rad_gt) < cut_ang && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_even_high){
+	        data_.gt_has_fidcut_GE11[ch->id().layer()-1] = 1;}
+              if( fabs(local_phi_rad_inner) < cut_ang && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_even_high){
+	        data_.inner_has_fidcut_GE11[ch->id().layer()-1] = 1;}
+	    }
+
+            if(ch->id().chamber()%2 == 1){ //odd
+              if( fabs(local_phi_rad) < cut_ang && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_odd_high){
+                data_.prop_has_fidcut_GE11[ch->id().layer()-1] = 1;}
+              if( fabs(local_phi_rad_gt) < cut_ang && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_odd_high){
+                data_.gt_has_fidcut_GE11[ch->id().layer()-1] = 1;}
+              if( fabs(local_phi_rad_inner) < cut_ang && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_odd_high){
+                data_.inner_has_fidcut_GE11[ch->id().layer()-1] = 1;}
+            }
+
+
+	    //const auto& etaPart_ch = GEMGeometry_->etaPartition(ch->id());
+	    //LocalPoint lp_middle = etaPart_ch->centreOfStrip(etaPart_ch->nstrips()/2);
+	    //float strip = etaPart_ch->strip(pos);
 	    //if (printAngle){
 	    //    cout <<"GEM id "<< ch->id() << endl;
 	    //    for (int s = 1; s <= etaPart_ch->specificTopology().nstrips(); s++)
 	    //         cout << "strip "<< s <<" localpoint "<< etaPart_ch->centreOfStrip(s) <<" stripangle "<<etaPart_ch->specificTopology().stripAngle(s-0.5) <<" pitch "<< etaPart_ch->specificTopology().pitch() <<" localPitch "<< etaPart_ch->localPitch(etaPart->centreOfStrip(s)) << endl;
 	    //    printAngle = false;
 	    //}
+
+
+
+
+
+
 
 	    strip = getCenterStripNumber_float(strip);
 	    LocalPoint lp_center = etaPart_ch->centreOfStrip(strip);
