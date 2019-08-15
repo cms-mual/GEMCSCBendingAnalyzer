@@ -1126,10 +1126,10 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.prop_localx_GE11[ch->id().layer()-1] = pos.x();
 	    data_.prop_localy_GE11[ch->id().layer()-1] = pos.y();
 
-            const LocalPoint temp(tsosGP.x(), tsosGP.y(), 0);
-            const LocalPoint local_coords(pos.x(), pos.y()+temp.mag());
-	    const float local_phi_rad = (3.14159265/2.) - local_coords.phi();
-	    const float local_phi_deg = 180*(local_phi_rad)/3.14159265;
+            LocalPoint temp(tsosGP.x(), tsosGP.y(), 0);
+            LocalPoint local_coords(pos.x(), temp.mag()); // This is technically an approximation, but close enough
+	    float local_phi_rad = (3.14159265/2.) - local_coords.phi();
+	    float local_phi_deg = 180*(local_phi_rad)/3.14159265;
             data_.prop_localphi_rad_GE11[ch->id().layer()-1] = local_phi_rad;
             data_.prop_localphi_deg_GE11[ch->id().layer()-1] = local_phi_deg;
 
@@ -1141,10 +1141,10 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.propgt_perp_GE11[ch->id().layer()-1]   = tsosGP_gt.perp();
 	    data_.propgt_localx_GE11[ch->id().layer()-1] = pos_gt.x();
 	    data_.propgt_localy_GE11[ch->id().layer()-1] = pos_gt.y();
-            const LocalPoint temp_gt(tsosGP_gt.x(), tsosGP_gt.y(), 0);
-	    const LocalPoint local_coords_gt(pos_gt.x(), pos_gt.y()+temp_gt.mag());
-	    const float local_phi_rad_gt = (3.14159265/2.) - local_coords_gt.phi();
-	    const float local_phi_deg_gt = 180*(local_phi_rad_gt)/3.14159265;
+            LocalPoint temp_gt(tsosGP_gt.x(), tsosGP_gt.y(), 0);
+            LocalPoint local_coords_gt(pos_gt.x(), temp_gt.mag()); // This is technically an approximation, but close enough
+	    float local_phi_rad_gt = (3.14159265/2.) - local_coords_gt.phi();
+	    float local_phi_deg_gt = 180*(local_phi_rad_gt)/3.14159265;
 	    data_.propgt_localphi_rad_GE11[ch->id().layer()-1] = local_phi_rad_gt;
             data_.propgt_localphi_deg_GE11[ch->id().layer()-1] = local_phi_deg_gt;
 
@@ -1156,10 +1156,10 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    data_.propinner_perp_GE11[ch->id().layer()-1]   = tsosGP_inner.perp();
 	    data_.propinner_localx_GE11[ch->id().layer()-1] = pos_inner.x();
 	    data_.propinner_localy_GE11[ch->id().layer()-1] = pos_inner.y();
-            const LocalPoint temp_inner(tsosGP_inner.x(), tsosGP_inner.y(), 0);
-            const LocalPoint local_coords_inner(pos_inner.x(), pos_inner.y()+temp_inner.mag());
-	    const float local_phi_rad_inner = (3.14159265/2.) - local_coords_inner.phi();
-	    const float local_phi_deg_inner = 180*(local_phi_rad_inner)/3.14159265;
+            LocalPoint temp_inner(tsosGP_inner.x(), tsosGP_inner.y(), 0);
+            LocalPoint local_coords_inner(pos_inner.x(), temp_inner.mag()); // This is technically an approximation, but close enough
+	    float local_phi_rad_inner = (3.14159265/2.) - local_coords_inner.phi();
+	    float local_phi_deg_inner = 180*(local_phi_rad_inner)/3.14159265;
             data_.propinner_localphi_rad_GE11[ch->id().layer()-1] = local_phi_rad_inner;
 	    data_.propinner_localphi_deg_GE11[ch->id().layer()-1] = local_phi_deg_inner;
 
@@ -1171,27 +1171,27 @@ SliceTestAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 
 	    //Appling fidcut
-	    const float fidcut_angle = 0.008;
-	    const float cut_ang = .088 - fidcut_angle;
+	    const float fidcut_angle = 1;
+	    const float cut_ang = 5 - fidcut_angle;
 	    const float fidcut_y = 5;
 	    const float cut_even_high = 250 - fidcut_y;
 	    const float cut_odd_high = 235 - fidcut_y;
 	    const float cut_low = 130 + fidcut_y;
 	    if(ch->id().chamber()%2 == 0){ //even
-	      if( fabs(local_phi_rad) < cut_ang && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_even_high){
+	      if( fabs(local_phi_deg) < cut_ang && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_even_high){
 	        data_.prop_has_fidcut_GE11[ch->id().layer()-1] = 1;}
-              if( fabs(local_phi_rad_gt) < cut_ang && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_even_high){
+              if( fabs(local_phi_deg_gt) < cut_ang && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_even_high){
 	        data_.gt_has_fidcut_GE11[ch->id().layer()-1] = 1;}
-              if( fabs(local_phi_rad_inner) < cut_ang && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_even_high){
+              if( fabs(local_phi_deg_inner) < cut_ang && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_even_high){
 	        data_.inner_has_fidcut_GE11[ch->id().layer()-1] = 1;}
 	    }
 
             if(ch->id().chamber()%2 == 1){ //odd
-              if( fabs(local_phi_rad) < cut_ang && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_odd_high){
+              if( fabs(local_phi_deg) < cut_ang && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_odd_high){
                 data_.prop_has_fidcut_GE11[ch->id().layer()-1] = 1;}
-              if( fabs(local_phi_rad_gt) < cut_ang && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_odd_high){
+              if( fabs(local_phi_deg_gt) < cut_ang && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_gt.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_odd_high){
                 data_.gt_has_fidcut_GE11[ch->id().layer()-1] = 1;}
-              if( fabs(local_phi_rad_inner) < cut_ang && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_odd_high){
+              if( fabs(local_phi_deg_inner) < cut_ang && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() > cut_low && pos_inner.y() + etaPart_ch->toGlobal(lp_middle).perp() < cut_odd_high){
                 data_.inner_has_fidcut_GE11[ch->id().layer()-1] = 1;}
             }
 
