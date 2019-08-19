@@ -48,13 +48,13 @@ process.source = cms.Source("PoolSource",
                             )
 #process.source.skipEvents = cms.untracked.uint32(17601)
 #file:/eos/uscms/store/group/lpcgem/SingleMuon_Run2017G_v1_RECO/            #directory on LPC where all 555 files are placed
-#process.source.fileNames.append('file:/eos/uscms/store/group/lpcgem/SingleMuon_Run2018C_v1_RECO/step3_001.root')
+process.source.fileNames.append('file:/uscms/home/daebi/nobackup/Jun19_test/src/GEMCSCBendingAnalyzer/MuonAnalyser/test/step3_skimed.root')
 #process.source.fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/320/500/00000/9AC95BCF-8C95-E811-A24D-FA163E67426E.root')
 #process.source.fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/data/Run2018D/SingleMuon/AOD/PromptReco-v2/000/320/500/00000/FE2B5583-8C95-E811-B8F8-FA163ED06560.root')
 #process.source.fileNames = cms.untracked.vstring('root://cmsxrootd-site.fnal.gov//store/data/Run2018D/SingleMuon/AOD/PromptReco-v2/000/321/051/00000/4E64F14D-9A9D-E811-9C5C-FA163E2B2370.root')
 #process.source.fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/data/Run2018D/SingleMuon/MINIAOD/PromptReco-v2/000/321/475/00000/AA10A5A1-77A6-E811-B57C-FA163EF0320D.root')
 #process.source.fileNames.append('file:/eos/uscms/store/user/lpcgem/SingleMuon/RERECO_Run2018D_singlemuon_GEMon_323470-324200_20181005/181008_152602/0000/step3_283.root')
-process.source.fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/relval/CMSSW_10_3_0_pre4/RelValSingleMuPt15Eta1p7_2p7/GEN-SIM-RECO/103X_upgrade2023_realistic_v2_2023D17noPUEA1000-v1/20000/5A534D0E-4003-ED43-AE4C-8D30015B49B7.root')
+#process.source.fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/relval/CMSSW_10_3_0_pre4/RelValSingleMuPt15Eta1p7_2p7/GEN-SIM-RECO/103X_upgrade2023_realistic_v2_2023D17noPUEA1000-v1/20000/5A534D0E-4003-ED43-AE4C-8D30015B49B7.root')
 
 #fname = 'singleMuon.txt'
 #f = open(fname)
