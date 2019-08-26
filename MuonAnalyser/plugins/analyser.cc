@@ -291,30 +291,25 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   if (muons->size() == 0) return;
 
   for (size_t i = 0; i < muons->size(); ++i){
+    cout << "new muon" << endl;
     edm::RefToBase<reco::Muon> muRef = muons->refAt(i);
     const reco::Muon* mu = muRef.get();
 
     if (mu->pt() < 2.0) continue;
     if (not mu->standAloneMuon()) continue;
-//    cout << "Is standalone" << endl;
 
     data_.init();
-//    cout << "data_.init();" << endl;
 
     if (not mu->innerTrack()) continue;
     const reco::Track* innerTrack = mu->track().get();
-//    cout << "mu->track().get() succeeded" << endl;
     reco::TransientTrack ttTrack = ttrackBuilder_->build(innerTrack); //Propagates from inner tracker to GEM
 
     float count = 0;
 
-//    cout << "starting chamber loop" << endl;
     for (const auto& ch : GEMGeometry_->etaPartitions()) {
       if (ch->id().station() != 1) continue; //Only takes GE1/1
-//      cout << "station = 1" << endl;
       TrajectoryStateOnSurface tsos = propagator->propagate(ttTrack.innermostMeasurementState(),ch->surface());
       if (!tsos.isValid()) continue;
-//      cout << "tsos is valid" << endl;
       GlobalPoint pos_global = tsos.globalPosition();
       LocalPoint pos_local = ch->toLocal(tsos.globalPosition());
       const GlobalPoint pos2D_global(pos_global.x(), pos_global.y(), 0);
@@ -323,9 +318,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
       if (pos_global.eta() * mu->eta() < 0.0) continue;
 
-//      cout << "inside pos?" << endl;
       if (bps.bounds().inside(pos2D_local) and ch->id().station() == 1 and ch->id().ring() == 1){
-//        cout << "station 1/1 and inside pos" << endl;
         const float fidcut_angle = 1.0;
         const float cut_ang = 5.0 - fidcut_angle;
         const float fidcut_y = 5.0;
@@ -340,11 +333,11 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
         LocalPoint local_to_center(pos_local.x(), prop_y_to_center + pos_local.y(), 0);
         const float prop_localphi_rad = (3.14159265/2.) - local_to_center.phi();
         const float prop_localphi_deg = prop_localphi_rad*180/3.14169265;
-
-        cout << "count is " << count << endl;
+//        cout << "new ch passed" << endl;
+//        cout << "chamber is " << ch->id().chamber() << " and roll is " << ch->id().roll() << " and layer is " << ch->id().layer() << endl;
+//        cout << "count is " << count << endl;
         count++;
-        cout << "New angle is " << prop_localphi_deg << endl;
-        cout << "x,y = " << pos_local.x() << ", " << pos_local.y() << endl;
+//        cout << "New angle is " << prop_localphi_deg << endl;
 
         if (ch->id().layer() == 1){
           data_.has_prop_GE11_L1 = true;
@@ -361,16 +354,16 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
           if (ch->id().chamber()%2 == 0){
             if (prop_localphi_deg > -cut_ang && prop_localphi_deg < cut_ang && prop_y_to_center + pos_local.y() > cut_low && prop_y_to_center + pos_local.y() < cut_even_high){
-              if(fabs(prop_localphi_deg) < cut_ang) cout << prop_localphi_deg << " is less than " << cut_ang << endl;
+              //if(fabs(prop_localphi_deg) < cut_ang) cout << prop_localphi_deg << " is less than " << cut_ang << endl;
               data_.has_fidcut_GE11_L1 = true;
-              cout << "has fidcut = " << data_.has_fidcut_GE11_L1 << " and angle is " << prop_localphi_deg << endl;
+//              cout << "has fidcut = " << data_.has_fidcut_GE11_L1 << " and angle is " << prop_localphi_deg << endl;
             }
           }
           if (ch->id().chamber()%2 == 1){
             if (prop_localphi_deg > -cut_ang && prop_localphi_deg < cut_ang && prop_y_to_center + pos_local.y() > cut_low && prop_y_to_center + pos_local.y() < cut_odd_high){
-              if(fabs(prop_localphi_deg) < cut_ang) cout << prop_localphi_deg << " is less than " << cut_ang << endl;
+              //if(fabs(prop_localphi_deg) < cut_ang) cout << prop_localphi_deg << " is less than " << cut_ang << endl;
               data_.has_fidcut_GE11_L1 = true;
-              cout << "has fidcut = " << data_.has_fidcut_GE11_L1 << " and angle is " << prop_localphi_deg << endl;
+//              cout << "has fidcut = " << data_.has_fidcut_GE11_L1 << " and angle is " << prop_localphi_deg << endl;
             }
           }
         }
@@ -404,8 +397,9 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
           if ( (hit)->geographicalId().det() == DetId::Detector::Muon && (hit)->geographicalId().subdetId() == MuonSubdetId::GEM){
             GEMDetId gemid((hit)->geographicalId());
             if (gemid.chamber() == ch->id().chamber() and gemid.layer() == ch->id().layer() and abs(gemid.roll() - ch->id().roll()) <= 1){
+              cout << "starting rechit" << endl;
               const auto& etaPart = GEMGeometry_->etaPartition(gemid);
-              float stripAngle = etaPart->specificTopology().stripAngle(strip);
+              float stripAngle = -etaPart->specificTopology().stripAngle(strip);
               float cosAngle = cos(stripAngle);
               float sinAngle = sin(stripAngle);
 
@@ -417,7 +411,8 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
 
               if (ch->id().station() == 1 and ch->id().ring() == 1 and fabs((hit)->localPosition().x() - pos_local.x()) < 999.0){
- 
+ 		cout << "Station 1 Ring 1 and dX = " << fabs((hit)->localPosition().x() - pos_local.x()) << endl;
+		cout << "RdPhi = " << cosAngle * (pos_local.x() - (hit)->localPosition().x()) + sinAngle * (pos_local.y() + deltay_roll) << endl;
                 if (ch->id().layer() == 1){
                   data_.has_rechit_GE11_L1 = true;
                   data_.rechit_chamber_GE11_L1 = gemid.chamber();
@@ -453,7 +448,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
         }
       }
     }
-    cout << "FILLING. fidcut = " << data_.has_fidcut_GE11_L1 << " angle is = " << data_.prop_localphi_deg_GE11_L1 << endl;
+//    cout << "FILLING. fidcut = " << data_.has_fidcut_GE11_L1 << " angle is = " << data_.prop_localphi_deg_GE11_L1 << endl;
     tree_data_->Fill();
 //    cout << "fill tree" << endl;
   }
