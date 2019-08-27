@@ -327,7 +327,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
         const float cut_low = 130.0 + fidcut_y;
 
         const auto& etaPart_ch = GEMGeometry_->etaPartition(ch->id());
-        float strip = etaPart_ch->strip(pos_local);
+//        float strip = etaPart_ch->strip(pos_local);
 
         const float prop_y_to_center = etaPart_ch->toGlobal(etaPart_ch->centreOfStrip(etaPart_ch->nstrips()/2)).perp();
         LocalPoint local_to_center(pos_local.x(), prop_y_to_center + pos_local.y(), 0);
@@ -399,6 +399,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
             if (gemid.chamber() == ch->id().chamber() and gemid.layer() == ch->id().layer() and abs(gemid.roll() - ch->id().roll()) <= 1){
               cout << "starting rechit" << endl;
               const auto& etaPart = GEMGeometry_->etaPartition(gemid);
+              float strip = etaPart->strip(hit->localPosition());
               float stripAngle = -etaPart->specificTopology().stripAngle(strip);
               float cosAngle = cos(stripAngle);
               float sinAngle = sin(stripAngle);
