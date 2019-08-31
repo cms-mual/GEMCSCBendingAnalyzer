@@ -400,7 +400,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
               cout << "starting rechit" << endl;
               const auto& etaPart = GEMGeometry_->etaPartition(gemid);
               float strip = etaPart->strip(hit->localPosition());
-              float stripAngle = -etaPart->specificTopology().stripAngle(strip);
+              float stripAngle = etaPart->specificTopology().stripAngle(strip);
               float cosAngle = cos(stripAngle);
               float sinAngle = sin(stripAngle);
 
