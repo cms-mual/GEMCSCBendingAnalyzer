@@ -42,11 +42,11 @@ process.source = cms.Source("PoolSource",
 			)
 				)
 
-process.source.fileNames.append('file:/uscms/home/daebi/nobackup/analyser/src/GEMCSCBendingAnalyzer/MuonAnalyser/test/step3_skimed.root')
+process.source.fileNames.append('file:step3_skimed.root')
 
 process.options = cms.untracked.PSet()
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("/uscms/home/daebi/nobackup/analyser/src/GEMCSCBendingAnalyzer/MuonAnalyser/test/out_ana.root"))
+process.TFileService = cms.Service("TFileService", fileName = cms.string("out_ana.root"))
 
 process.analyser = cms.EDAnalyzer('analyser', 
 	process.MuonServiceProxy, 
