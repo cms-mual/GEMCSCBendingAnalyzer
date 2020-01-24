@@ -101,8 +101,10 @@ struct MuonData
 
   float RdPhi_inner_GE11;
   float RdPhi_CSC_GE11;
+  float det_id;
 
-  bool has_fidcut_GE11;
+  bool has_fidcut_inner_GE11;
+  bool has_fidcut_CSC_GE11;
 
 
 };
@@ -146,8 +148,10 @@ void MuonData::init()
 
   RdPhi_inner_GE11 = 999999;
   RdPhi_CSC_GE11 = 999999;
+  det_id = 999999;
 
-  has_fidcut_GE11 = false;
+  has_fidcut_inner_GE11 = false;
+  has_fidcut_CSC_GE11 = false;
 
 }
 
@@ -193,8 +197,10 @@ TTree* MuonData::book(TTree *t){
 //Residual
   t->Branch("RdPhi_inner_GE11", &RdPhi_inner_GE11);
   t->Branch("RdPhi_CSC_GE11", &RdPhi_CSC_GE11);
+  t->Branch("det_id", &det_id);
 //Cut
-  t->Branch("has_fidcut_GE11", &has_fidcut_GE11);
+  t->Branch("has_fidcut_inner_GE11", &has_fidcut_inner_GE11);
+  t->Branch("has_fidcut_CSC_GE11", &has_fidcut_CSC_GE11);
 
   return t;
 }
@@ -341,12 +347,12 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
         if (ch->id().chamber()%2 == 0){
           if (prop_inner_localphi_deg > -cut_ang && prop_inner_localphi_deg < cut_ang && prop_y_to_center + pos_local_inner.y() > cut_low && prop_y_to_center + pos_local_inner.y() < cut_even_high){
-            data_.has_fidcut_GE11 = true;
+            data_.has_fidcut_inner_GE11 = true;
           }
         }
         if (ch->id().chamber()%2 == 1){
           if (prop_inner_localphi_deg > -cut_ang && prop_inner_localphi_deg < cut_ang && prop_y_to_center + pos_local_inner.y() > cut_low && prop_y_to_center + pos_local_inner.y() < cut_odd_high){
-            data_.has_fidcut_GE11 = true;
+            data_.has_fidcut_inner_GE11 = true;
           }
         }
 
@@ -364,16 +370,16 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
         data_.prop_CSC_localphi_rad_GE11 = prop_CSC_localphi_rad;
         data_.prop_CSC_localphi_deg_GE11 = prop_CSC_localphi_deg;
 
-/*        if (ch->id().chamber()%2 == 0){
-          if (prop_localphi_deg > -cut_ang && prop_localphi_deg < cut_ang && prop_y_to_center + pos_local_inner.y() > cut_low && prop_y_to_center + pos_local_inner.y() < cut_even_high){
-            data_.has_fidcut_GE11 = true;
+        if (ch->id().chamber()%2 == 0){
+          if (prop_CSC_localphi_deg > -cut_ang && prop_CSC_localphi_deg < cut_ang && prop_y_to_center + pos_local_CSC.y() > cut_low && prop_y_to_center + pos_local_CSC.y() < cut_even_high){
+            data_.has_fidcut_CSC_GE11 = true;
           }
         }
         if (ch->id().chamber()%2 == 1){
-          if (prop_localphi_deg > -cut_ang && prop_localphi_deg < cut_ang && prop_y_to_center + pos_local_inner.y() > cut_low && prop_y_to_center + pos_local_inner.y() < cut_odd_high){
-            data_.has_fidcut_GE11 = true;
+          if (prop_CSC_localphi_deg > -cut_ang && prop_CSC_localphi_deg < cut_ang && prop_y_to_center + pos_local_CSC.y() > cut_low && prop_y_to_center + pos_local_CSC.y() < cut_odd_high){
+            data_.has_fidcut_CSC_GE11 = true;
           }
-        } */
+        }
 
 
 
@@ -422,15 +428,14 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
                 data_.rechit_localphi_deg_GE11 = rechit_localphi_deg;
                 data_.RdPhi_inner_GE11 = cosAngle * (pos_local_inner.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_inner.y() + deltay_roll);
                 data_.RdPhi_CSC_GE11 = cosAngle * (pos_local_CSC.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_CSC.y() + deltay_roll);
+                data_.det_id = gemid.region()*(gemid.station()*100 + gemid.chamber());
               }
             }
           }
         }
       }
     }
-//    cout << "FILLING. fidcut = " << data_.has_fidcut_GE11_L1 << " angle is = " << data_.prop_localphi_deg_GE11_L1 << endl;
     tree_data_->Fill();
-//    cout << "fill tree" << endl;
   }
 }
 
