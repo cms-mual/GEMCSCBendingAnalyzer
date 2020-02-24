@@ -5,9 +5,9 @@
 # with command line options: step3 --runUnscheduled --conditions auto:phase2_realistic --era Phase2 -s RAW2DIGI,RECO --datatier GEN-SIM-DIGI-RAW-RECO -n 10 --eventcontent FEVTDEBUGHLT --beamspot HLLHC14TeV --geometry Extended2023D17 --filein file:step2.root --fileout file:step3.root
 import FWCore.ParameterSet.Config as cms
 
-from Configuration.StandardSequences.Eras import eras
+from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
 
-process = cms.Process('RECO',eras.Phase2)
+process = cms.Process('RECO',Phase2C9)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -15,7 +15,7 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D49Reco_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
 process.load('Configuration.StandardSequences.Reconstruction_cff')
@@ -28,7 +28,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/eos/uscms/store/user/tahuang/SingleMuon_Pt30_Eta1p0To2p5_Extended2023D17_phase2_realistic_50k/SingleMu_Pt30_MC_DIGI_L1_DIGI2RAW_phase2_20190227/190228_181259/0000/step2_1.root'),
+    fileNames = cms.untracked.vstring('file:step2.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -80,7 +80,7 @@ process.FEVTDEBUGHLToutput.outputCommands.append('drop FEDRawDataCollection_rawD
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T15', '')
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)

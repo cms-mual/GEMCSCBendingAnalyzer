@@ -1,8 +1,8 @@
 from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = config()
 ###2018runA  314472-318876
-config.General.requestName = 'SingleMu_Pt30_MC_RAW2DIGI_RECO_phase2_20190227'
-config.General.workArea = 'SingleMu_Pt30_MC_20190227'#working dir 
+config.General.requestName = 'SingleMu_Pt30_to_200_500K_RAW2DIGI_RECO_phase2'
+config.General.workArea = 'SingleMu_Pt30_to_200_500K_02_18_20'#working dir 
 config.General.transferOutputs = True
 config.General.transferLogs = True
 
@@ -20,13 +20,13 @@ config.JobType.allowUndistributedCMSSW = True
 
 #config.Data.inputDataset = '/SingleMuon/Run2018D-PromptReco-v2/AOD'
 #config.Data.inputDataset = '/SingleMuon_Pt30_Eta1p0To2p5_Extended2023D17_phase2_realistic_50k/tahuang-SingleMu_Pt30_GEN_SIM_20190227-81a357cef3dffc8cd647539309e1b14a/USER'
-config.Data.inputDataset = '/SingleMuon_Pt30_Eta1p0To2p5_Extended2023D17_phase2_realistic_50k/tahuang-SingleMu_Pt30_MC_DIGI_L1_DIGI2RAW_phase2_20190227-2fd57614673d9e89a7d14ab9560b9d32/USER'
+config.Data.inputDataset = '/SingleMu_Pt50_500K_01_22_20/daebi-SingleMu_Pt30_to_200_DIGI_L1_DIGI2RAW_500K_02_18_20-3c9f1c0e418f5425a35f9e4ba52cd127/USER'
 config.Data.splitting = 'FileBased'
 #config.Data.splitting = 'LumiBased'
 #config.Data.splitting = 'Automatic'
 config.Data.inputDBS = 'phys03'
 config.Data.unitsPerJob = 2
-config.Data.outLFNDirBase = '/store/user/tahuang/'
+config.Data.outLFNDirBase = '/store/user/daebi/'
 #config.Data.outLFNDirBase = '/store/group/lpcgem/'
 config.Data.publication = True
 #import FWCore.PythonUtilities.LumiList as LumiList

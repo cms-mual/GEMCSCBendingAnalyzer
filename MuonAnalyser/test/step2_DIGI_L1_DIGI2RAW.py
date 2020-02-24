@@ -5,9 +5,9 @@
 # with command line options: step2 --conditions auto:phase2_realistic --era Phase2 -s DIGI:pdigi_valid,L1,DIGI2RAW --datatier GEN-SIM-DIGI-RAW -n 100 --eventcontent FEVTDEBUGHLT --beamspot HLLHC14TeV --geometry Extended2023D17 --filein file:step1.root --fileout file:step2.root
 import FWCore.ParameterSet.Config as cms
 
-from Configuration.StandardSequences.Eras import eras
+from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
 
-process = cms.Process('DIGI2RAW',eras.Phase2)
+process = cms.Process('DIGI2RAW',Phase2C9)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -15,7 +15,7 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D49Reco_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.Digi_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
@@ -30,7 +30,9 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
-    fileNames = cms.untracked.vstring('file:/eos/uscms/store/user/tahuang/SingleMuon_Pt30_Eta1p0To2p5_Extended2023D17_phase2_realistic_50k/SingleMu_Pt30_GEN_SIM_20190227/190228_041408/0000/step1_1.root'),
+    fileNames = cms.untracked.vstring('file:step1.root'))
+"""
+#    fileNames = cms.untracked.vstring('file:/eos/uscms/store/user/tahuang/SingleMuon_Pt30_Eta1p0To2p5_Extended2023D17_phase2_realistic_50k/SingleMu_Pt30_GEN_SIM_20190227/190228_041408/0000/step1_1.root'),
     inputCommands = cms.untracked.vstring(
         'keep *', 
         'drop *_genParticles_*_*', 
@@ -50,9 +52,9 @@ process.source = cms.Source("PoolSource",
         'drop *_genMetTrue_*_*', 
         'drop *_genMetIC5GenJs_*_*'
     ),
-    secondaryFileNames = cms.untracked.vstring()
+    #secondaryFileNames = cms.untracked.vstring()
 )
-
+"""
 process.options = cms.untracked.PSet(
 
 )
@@ -81,7 +83,7 @@ process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
 # Other statements
 process.mix.digitizers = cms.PSet(process.theDigitizersValid)
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T15', '')
 
 # Path and EndPath definitions
 process.digitisation_step = cms.Path(process.pdigi_valid)

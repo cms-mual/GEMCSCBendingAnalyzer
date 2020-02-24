@@ -1,8 +1,8 @@
 from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = config()
 #section general
-config.General.requestName = 'SingleMu_Pt30_GEN_SIM_1M'
-config.General.workArea = 'SingleMu_Pt30_MC_1M_20190304'#working dir 
+config.General.requestName = 'SingleMu_Pt30_to_200_GEN_SIM_500K_02_18_20'
+config.General.workArea = 'SingleMu_Pt30_to_200_500K_02_18_20'#working dir 
 config.General.transferOutputs = True
 config.General.transferLogs = True
 
@@ -30,11 +30,11 @@ config.Data.splitting = 'EventBased'
 #config.Data.splitting = 'Automatic'
 #config.Data.inputDBS = 'phys03'
 #config.Data.inputDBS = 'global'
-config.Data.unitsPerJob = 1000
+config.Data.unitsPerJob = 500
 NJOBS = 1000
 config.Data.totalUnits = config.Data.unitsPerJob * NJOBS
-#config.Data.outLFNDirBase = '/store/user/tahuang/'
-config.Data.outLFNDirBase = '/store/group/lpcgem/'
+config.Data.outLFNDirBase = '/store/user/daebi/'
+#config.Data.outLFNDirBase = '/store/group/lpcgem/'
 config.Data.publication = True
 #import FWCore.PythonUtilities.LumiList as LumiList
 ##lumiList = LumiList(filename='my_original_lumi_mask.json')
@@ -43,7 +43,7 @@ config.Data.publication = True
 #lumiList.writeJSON('my_lumi_mask.json')
 #config.Data.lumiMask = 'my_lumi_mask.json'
 #process.source.lumisToProcess = LumiList.LumiList(filename = 'goodList.json').getVLuminosityBlockRange()
-config.Data.outputPrimaryDataset = "SingleMuon_Pt30_Eta0To2p5_Extended2023D17_phase2_realistic_1M"
+config.Data.outputPrimaryDataset = "SingleMu_Pt50_500K_01_22_20"
 config.Data.outputDatasetTag = config.General.requestName
 config.Site.storageSite = 'T3_US_FNALLPC'
 config.Site.ignoreGlobalBlacklist = True

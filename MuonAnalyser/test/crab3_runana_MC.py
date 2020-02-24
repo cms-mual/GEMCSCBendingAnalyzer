@@ -2,14 +2,14 @@ from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = config()
 ###2018runA  314472-318876
 #section general
-config.General.requestName = 'GEMCSCAan_crab_SingleMuPt30_MC_50k_20190304v2'
-config.General.workArea = 'GEMCSCAna_crab_SingleMuPt30_RECO_GEMon_MC'#working dir 
+config.General.requestName = 'analyser'
+config.General.workArea = 'SingleMu_Pt30_to_200_500K_02_18_20'#working dir 
 config.General.transferOutputs = True
 config.General.transferLogs = True
 
 #section JobType
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'runSliceTestAnalysis_MC.py'
+config.JobType.psetName = 'analyser.py'
 config.JobType.maxMemoryMB = 2000
 config.JobType.maxJobRuntimeMin = 1440 # 1440min = 24hours
 config.JobType.numCores = 1
@@ -27,14 +27,14 @@ config.JobType.allowUndistributedCMSSW = True
 #config.Data.inputDataset = '/SingleMuon/tahuang-RERECO_Run2018D_singlemuon_GEMon_323470-324200_20181005-4201715c0f9d22f1f7baffdbca473c7b/USER'
 #config.Data.inputDataset = '/RelValSingleMuPt15Eta1p7_2p7/CMSSW_10_3_0_pre4-103X_upgrade2023_realistic_v2_2023D17noPUEA1000-v1/GEN-SIM-RECO'
 #config.Data.inputDataset = '/SingleMuon/Run2018D-ZMu-PromptReco-v2/RAW-RECO'
-config.Data.inputDataset = '/SingleMuon_Pt30_Eta1p0To2p5_Extended2023D17_phase2_realistic_50k/tahuang-SingleMu_Pt30_MC_RAW2DIGI_RECO_phase2_20190227-b2cf3352cf25f5bc56c1d440af858916/USER'
+config.Data.inputDataset = '/SingleMu_Pt50_500K_01_22_20/daebi-SingleMu_Pt30_to_200_500K_RAW2DIGI_RECO_phase2-26430e2fb821d1f1477c362253785707/USER'
 config.Data.inputDBS = 'phys03'
 #config.Data.inputDBS = 'global'
 config.Data.splitting = 'FileBased'
 #config.Data.splitting = 'LumiBased'
 #config.Data.splitting = 'Automatic'
 config.Data.unitsPerJob = 1
-config.Data.outLFNDirBase = '/store/user/tahuang/'
+config.Data.outLFNDirBase = '/store/user/daebi/'
 #config.Data.outLFNDirBase = '/store/group/lpcgem/'
 config.Data.publication = False
 #import FWCore.PythonUtilities.LumiList as LumiList
