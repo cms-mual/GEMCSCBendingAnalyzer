@@ -62,9 +62,9 @@ struct MuonData
   void init();
   TTree* book(TTree *t);
   //Prop from tracker
-  int prop_layer_GE11;
   bool has_prop_GE11;
   int prop_region_GE11;
+  int prop_layer_GE11;
   int prop_chamber_GE11;
   int prop_roll_GE11;
   float prop_inner_x_GE11;
@@ -87,9 +87,9 @@ struct MuonData
   float prop_CSC_localphi_deg_GE11;
 
 
-  int rechit_layer_GE11;
   bool has_rechit_GE11;
   int rechit_region_GE11;
+  int rechit_layer_GE11;
   int rechit_chamber_GE11;
   int rechit_roll_GE11;
   float rechit_x_GE11;
@@ -113,9 +113,9 @@ struct MuonData
 
 void MuonData::init()
 {
-  prop_layer_GE11 = 99999;
   has_prop_GE11 = false;
   prop_region_GE11 = 99999;
+  prop_layer_GE11 = 99999;
   prop_chamber_GE11 = 99999;
   prop_roll_GE11 = 99999;
   prop_inner_x_GE11 = 99999;
@@ -136,9 +136,9 @@ void MuonData::init()
   prop_CSC_localphi_rad_GE11 = 99999;
   prop_CSC_localphi_deg_GE11 = 99999;
 
-  rechit_layer_GE11 = 999999;
   has_rechit_GE11 = false;
   rechit_region_GE11 = 999999;
+  rechit_layer_GE11 = 999999;
   rechit_chamber_GE11 = 999999;
   rechit_roll_GE11 = 999999;
   rechit_x_GE11 = 999999;
@@ -165,9 +165,9 @@ TTree* MuonData::book(TTree *t){
 
 
 //Propogated Inner
-  t->Branch("prop_layer_GE11", &prop_layer_GE11);
   t->Branch("has_prop_GE11", &has_prop_GE11);
   t->Branch("prop_region_GE11", &prop_region_GE11);
+  t->Branch("prop_layer_GE11", &prop_layer_GE11);
   t->Branch("prop_chamber_GE11", &prop_chamber_GE11);
   t->Branch("prop_roll_GE11", &prop_roll_GE11);
   t->Branch("prop_inner_x_GE11", &prop_inner_x_GE11);
@@ -190,6 +190,7 @@ TTree* MuonData::book(TTree *t){
 //Reconstructed
   t->Branch("has_rechit_GE11", &has_rechit_GE11);
   t->Branch("rechit_region_GE11", &rechit_region_GE11);
+  t->Branch("rechit_layer_GE11", &rechit_layer_GE11);
   t->Branch("rechit_chamber_GE11", &rechit_chamber_GE11);
   t->Branch("rechit_roll_GE11", &rechit_roll_GE11);
   t->Branch("rechit_x_GE11", &rechit_x_GE11);
@@ -331,16 +332,9 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
         count++;
 
 
-        std::cout << "layer is " << ch->id().layer() << std::endl;
-
-        if (ch->id().layer() == 1){
-          data_.prop_layer_GE11 = 1;
-          }
-        if (ch->id().layer() == 2){
-          data_.prop_layer_GE11 = 2;
-          }
         data_.has_prop_GE11 = true;
         data_.prop_region_GE11 = ch->id().region();
+        data_.prop_layer_GE11 = ch->id().layer();
         data_.prop_chamber_GE11 = ch->id().chamber();
         data_.prop_roll_GE11 = ch->id().roll();
         data_.prop_inner_x_GE11 = pos_global_inner.x();
@@ -411,32 +405,29 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
 
               if (ch->id().station() == 1 and ch->id().ring() == 1 and fabs((hit)->localPosition().x() - pos_local_inner.x()) < 999.0){
- 		cout << "Station 1 Ring 1 and dX = " << fabs((hit)->localPosition().x() - pos_local_inner.x()) << endl;
-		cout << "RdPhi = " << cosAngle * (pos_local_inner.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_inner.y() + deltay_roll) << endl;
-                if (ch->id().layer() == 1){
-                  data_.rechit_layer_GE11 = 1;
+
+
+                if (abs(data_.RdPhi_CSC_GE11) > abs(cosAngle * (pos_local_CSC.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_CSC.y() + deltay_roll))){
+                  std::cout << "Overwrite" << std::endl;
+
+
+                  data_.has_rechit_GE11 = true;
+                  data_.rechit_region_GE11 = gemid.region();
+                  data_.rechit_layer_GE11 = gemid.layer();
+                  data_.rechit_chamber_GE11 = gemid.chamber();
+                  data_.rechit_roll_GE11 = gemid.roll();
+                  data_.rechit_x_GE11 = etaPart->toGlobal((hit)->localPosition()).x();
+                  data_.rechit_y_GE11 = etaPart->toGlobal((hit)->localPosition()).y();
+                  data_.rechit_r_GE11 = etaPart->toGlobal((hit)->localPosition()).mag();
+                  data_.rechit_localx_GE11 = (hit)->localPosition().x();
+                  data_.rechit_localy_GE11 = (hit)->localPosition().y();
+                  data_.rechit_y_adjusted_GE11 = rechit_y_to_center + (hit)->localPosition().y();
+                  data_.rechit_localphi_rad_GE11 = rechit_localphi_rad;
+                  data_.rechit_localphi_deg_GE11 = rechit_localphi_deg;
+                  data_.RdPhi_inner_GE11 = cosAngle * (pos_local_inner.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_inner.y() + deltay_roll);
+                  data_.RdPhi_CSC_GE11 = cosAngle * (pos_local_CSC.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_CSC.y() + deltay_roll);
+                  data_.det_id = gemid.region()*(gemid.station()*100 + gemid.chamber());
                 }
-                if (ch->id().layer() == 2){
-                  data_.rechit_layer_GE11 = 2;
-                }
-
-
-
-                data_.has_rechit_GE11 = true;
-                data_.rechit_region_GE11 = gemid.region();
-                data_.rechit_chamber_GE11 = gemid.chamber();
-                data_.rechit_roll_GE11 = gemid.roll();
-                data_.rechit_x_GE11 = etaPart->toGlobal((hit)->localPosition()).x();
-                data_.rechit_y_GE11 = etaPart->toGlobal((hit)->localPosition()).y();
-                data_.rechit_r_GE11 = etaPart->toGlobal((hit)->localPosition()).mag();
-                data_.rechit_localx_GE11 = (hit)->localPosition().x();
-                data_.rechit_localy_GE11 = (hit)->localPosition().y();
-                data_.rechit_y_adjusted_GE11 = rechit_y_to_center + (hit)->localPosition().y();
-                data_.rechit_localphi_rad_GE11 = rechit_localphi_rad;
-                data_.rechit_localphi_deg_GE11 = rechit_localphi_deg;
-                data_.RdPhi_inner_GE11 = cosAngle * (pos_local_inner.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_inner.y() + deltay_roll);
-                data_.RdPhi_CSC_GE11 = cosAngle * (pos_local_CSC.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_CSC.y() + deltay_roll);
-                data_.det_id = gemid.region()*(gemid.station()*100 + gemid.chamber());
               }
             }
           }
