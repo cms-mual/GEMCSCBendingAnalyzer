@@ -64,6 +64,7 @@ struct MuonData
   //Prop from tracker
   bool has_prop_GE11;
   int prop_region_GE11;
+  int prop_station_GE11;
   int prop_layer_GE11;
   int prop_chamber_GE11;
   int prop_roll_GE11;
@@ -89,6 +90,7 @@ struct MuonData
 
   bool has_rechit_GE11;
   int rechit_region_GE11;
+  int rechit_station_GE11;
   int rechit_layer_GE11;
   int rechit_chamber_GE11;
   int rechit_roll_GE11;
@@ -115,6 +117,7 @@ void MuonData::init()
 {
   has_prop_GE11 = false;
   prop_region_GE11 = 99999;
+  prop_station_GE11 = 99999;
   prop_layer_GE11 = 99999;
   prop_chamber_GE11 = 99999;
   prop_roll_GE11 = 99999;
@@ -138,6 +141,7 @@ void MuonData::init()
 
   has_rechit_GE11 = false;
   rechit_region_GE11 = 999999;
+  rechit_station_GE11 = 999999;
   rechit_layer_GE11 = 999999;
   rechit_chamber_GE11 = 999999;
   rechit_roll_GE11 = 999999;
@@ -167,6 +171,7 @@ TTree* MuonData::book(TTree *t){
 //Propogated Inner
   t->Branch("has_prop_GE11", &has_prop_GE11);
   t->Branch("prop_region_GE11", &prop_region_GE11);
+  t->Branch("prop_station_GE11", &prop_station_GE11);
   t->Branch("prop_layer_GE11", &prop_layer_GE11);
   t->Branch("prop_chamber_GE11", &prop_chamber_GE11);
   t->Branch("prop_roll_GE11", &prop_roll_GE11);
@@ -190,6 +195,7 @@ TTree* MuonData::book(TTree *t){
 //Reconstructed
   t->Branch("has_rechit_GE11", &has_rechit_GE11);
   t->Branch("rechit_region_GE11", &rechit_region_GE11);
+  t->Branch("rechit_station_GE11", &rechit_station_GE11);
   t->Branch("rechit_layer_GE11", &rechit_layer_GE11);
   t->Branch("rechit_chamber_GE11", &rechit_chamber_GE11);
   t->Branch("rechit_roll_GE11", &rechit_roll_GE11);
@@ -334,6 +340,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
         data_.has_prop_GE11 = true;
         data_.prop_region_GE11 = ch->id().region();
+        data_.prop_station_GE11 = ch->id().station();
         data_.prop_layer_GE11 = ch->id().layer();
         data_.prop_chamber_GE11 = ch->id().chamber();
         data_.prop_roll_GE11 = ch->id().roll();
@@ -389,7 +396,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
         for (auto hit = gemRecHits->begin(); hit != gemRecHits->end(); hit++){
           if ( (hit)->geographicalId().det() == DetId::Detector::Muon && (hit)->geographicalId().subdetId() == MuonSubdetId::GEM){
             GEMDetId gemid((hit)->geographicalId());
-            if (gemid.chamber() == ch->id().chamber() and gemid.layer() == ch->id().layer() and abs(gemid.roll() - ch->id().roll()) <= 1){
+            if (gemid.station() == ch->id().station() and gemid.chamber() == ch->id().chamber() and gemid.layer() == ch->id().layer() and abs(gemid.roll() - ch->id().roll()) <= 1){
               cout << "starting rechit" << endl;
               const auto& etaPart = GEMGeometry_->etaPartition(gemid);
               float strip = etaPart->strip(hit->localPosition());
@@ -413,6 +420,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
                   data_.has_rechit_GE11 = true;
                   data_.rechit_region_GE11 = gemid.region();
+                  data_.rechit_station_GE11 = gemid.station();
                   data_.rechit_layer_GE11 = gemid.layer();
                   data_.rechit_chamber_GE11 = gemid.chamber();
                   data_.rechit_roll_GE11 = gemid.roll();
