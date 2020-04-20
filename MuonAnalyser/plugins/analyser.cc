@@ -61,6 +61,10 @@ struct MuonData
 {
   void init();
   TTree* book(TTree *t);
+
+  int muon_charge;
+  float muon_pt;
+
   //Prop from tracker
   bool has_prop_GE11;
   int prop_region_GE11;
@@ -76,6 +80,8 @@ struct MuonData
   float prop_inner_y_adjusted_GE11;
   float prop_inner_localphi_rad_GE11;
   float prop_inner_localphi_deg_GE11;
+  float prop_inner_chi2_GE11;
+  float prop_inner_ndof_GE11;
 
   //Prop from CSC
   float prop_CSC_x_GE11;
@@ -86,6 +92,8 @@ struct MuonData
   float prop_CSC_y_adjusted_GE11;
   float prop_CSC_localphi_rad_GE11;
   float prop_CSC_localphi_deg_GE11;
+  float prop_CSC_chi2_GE11;
+  float prop_CSC_ndof_GE11;
 
 
   bool has_rechit_GE11;
@@ -115,6 +123,9 @@ struct MuonData
 
 void MuonData::init()
 {
+  muon_charge = 9999;
+  muon_pt = 9999;
+
   has_prop_GE11 = false;
   prop_region_GE11 = 99999;
   prop_station_GE11 = 99999;
@@ -129,6 +140,8 @@ void MuonData::init()
   prop_inner_y_adjusted_GE11 = 99999;
   prop_inner_localphi_rad_GE11 = 99999;
   prop_inner_localphi_deg_GE11 = 99999;
+  prop_inner_chi2_GE11 = 99999;
+  prop_inner_ndof_GE11 = 99999;
 
   prop_CSC_x_GE11 = 99999;
   prop_CSC_y_GE11 = 99999;
@@ -138,6 +151,8 @@ void MuonData::init()
   prop_CSC_y_adjusted_GE11 = 99999;
   prop_CSC_localphi_rad_GE11 = 99999;
   prop_CSC_localphi_deg_GE11 = 99999;
+  prop_CSC_chi2_GE11 = 99999;
+  prop_CSC_ndof_GE11 = 99999;
 
   has_rechit_GE11 = false;
   rechit_region_GE11 = 999999;
@@ -167,7 +182,8 @@ TTree* MuonData::book(TTree *t){
   edm::Service< TFileService > fs;
   t = fs->make<TTree>("MuonData", "MuonData");
 
-
+  t->Branch("muon_charge", &muon_charge);
+  t->Branch("muon_pt", &muon_pt);
 //Propogated Inner
   t->Branch("has_prop_GE11", &has_prop_GE11);
   t->Branch("prop_region_GE11", &prop_region_GE11);
@@ -183,6 +199,8 @@ TTree* MuonData::book(TTree *t){
   t->Branch("prop_inner_y_adjusted_GE11", &prop_inner_y_adjusted_GE11);
   t->Branch("prop_inner_localphi_rad_GE11", &prop_inner_localphi_rad_GE11);
   t->Branch("prop_inner_localphi_deg_GE11", &prop_inner_localphi_deg_GE11);
+  t->Branch("prop_inner_chi2_GE11", &prop_inner_chi2_GE11);
+  t->Branch("prop_inner_ndof_GE11", &prop_inner_ndof_GE11);
 //Propogated CSC
   t->Branch("prop_CSC_x_GE11", &prop_CSC_x_GE11);
   t->Branch("prop_CSC_y_GE11", &prop_CSC_y_GE11);
@@ -192,6 +210,8 @@ TTree* MuonData::book(TTree *t){
   t->Branch("prop_CSC_y_adjusted_GE11", &prop_CSC_y_adjusted_GE11);
   t->Branch("prop_CSC_localphi_rad_GE11", &prop_CSC_localphi_rad_GE11);
   t->Branch("prop_CSC_localphi_deg_GE11", &prop_CSC_localphi_deg_GE11);
+  t->Branch("prop_CSC_chi2_GE11", &prop_CSC_chi2_GE11);
+  t->Branch("prop_CSC_ndof_GE11", &prop_CSC_ndof_GE11);
 //Reconstructed
   t->Branch("has_rechit_GE11", &has_rechit_GE11);
   t->Branch("rechit_region_GE11", &rechit_region_GE11);
@@ -287,8 +307,11 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     if (not mu->innerTrack()) continue;
     const reco::Track* innerTrack = mu->track().get();
     const reco::Track* muonTrack = 0;
-    if ( mu->globalTrack().isNonnull() ) muonTrack = mu->globalTrack().get();
-    else if ( mu->outerTrack().isNonnull()  ) muonTrack = mu->outerTrack().get();
+    const reco::Track* muonOuterTrack = 0;
+    if ( mu->globalTrack().isNonnull() ){
+      muonTrack = mu->globalTrack().get(); 
+      muonOuterTrack = mu->outerTrack().get();
+      }
     else 
       continue;
     reco::TransientTrack ttTrack_tracker = ttrackBuilder_->build(innerTrack); //tracker to GEM
@@ -320,6 +343,15 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
      
 
       if (bps.bounds().inside(pos2D_local_inner) and bps.bounds().inside(pos2D_local_CSC) and ch->id().station() == 1 and ch->id().ring() == 1){
+
+        data_.muon_charge = mu->charge();
+        data_.muon_pt = mu->pt();
+        data_.prop_inner_chi2_GE11 = innerTrack->chi2();
+        data_.prop_inner_ndof_GE11 = innerTrack->ndof();
+        data_.prop_CSC_chi2_GE11 = muonOuterTrack->chi2();
+        data_.prop_CSC_ndof_GE11 = muonOuterTrack->ndof();
+
+
         const float fidcut_angle = 1.0;
         const float cut_ang = 5.0 - fidcut_angle;
         const float fidcut_y = 5.0;
