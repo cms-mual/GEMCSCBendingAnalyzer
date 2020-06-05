@@ -68,7 +68,8 @@ process.source = cms.Source("PoolSource",
 			)
 				)
 
-process.source.fileNames.append('file:step3_skimed.root')
+#process.source.fileNames.append('file:step3_skimed.root')
+process.source.fileNames.append('file:step2_1139.root')
 
 process.options = cms.untracked.PSet()
 

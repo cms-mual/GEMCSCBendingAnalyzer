@@ -1,9 +1,10 @@
-from CRABClient.UserUtilities import config, getUsernameFromSiteDB
+#from CRABClient.UserUtilities import config, getUsernameFromSiteDB
+from CRABClient.UserUtilities import config
 config = config()
 ###2018runA  314472-318876
 #section general
 config.General.requestName = 'analyser'
-config.General.workArea = 'HK_pT-30to200_iter1_may7'#working dir 
+config.General.workArea = 'dphiz_initial_jun3'#working dir 
 config.General.transferOutputs = True
 config.General.transferLogs = True
 
@@ -51,4 +52,5 @@ config.Data.publication = False
 config.Data.outputDatasetTag = config.General.requestName
 config.Site.storageSite = 'T3_US_FNALLPC'
 config.Site.ignoreGlobalBlacklist = True
+config.Site.whitelist = ["T2_KR_KISTI"]
 #config.Site.whitelist = ["T0_CH_CERN_MSS"]

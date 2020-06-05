@@ -72,7 +72,7 @@ process.FEVTDEBUGHLToutput.outputCommands.append('drop recoPF*_*_*_*')
 process.FEVTDEBUGHLToutput.outputCommands.append('drop *recoJet*_*_*_*')
 process.FEVTDEBUGHLToutput.outputCommands.append('drop PCaloHits*_*_*_*')
 #process.FEVTDEBUGHLToutput.outputCommands.append('drop recoTrackExtras*_*_*_*')
-process.FEVTDEBUGHLToutput.outputCommands.append('drop TrackingRecHitsOwned_*_*_*')
+#process.FEVTDEBUGHLToutput.outputCommands.append('drop TrackingRecHitsOwned_*_*_*')
 process.FEVTDEBUGHLToutput.outputCommands.append('drop FEDRawDataCollection_rawDataCollector__DIGI2RAW')
 """
 """

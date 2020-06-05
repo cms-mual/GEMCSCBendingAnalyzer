@@ -1,8 +1,8 @@
 from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = config()
 ###2018runA  314472-318876
-config.General.requestName = 'SingleMu_Pt30_to_200_500K_RAW2DIGI_RECO_phase2'
-config.General.workArea = 'SingleMu_Pt30_to_200_500K_02_18_20'#working dir 
+config.General.requestName = 'SingleMu_Pt30_to_200_500K_RAW2DIGI_RECO_03_30_20'
+config.General.workArea = 'SingleMu_Pt30_to_200_500K_03_30_20'#working dir 
 config.General.transferOutputs = True
 config.General.transferLogs = True
 
