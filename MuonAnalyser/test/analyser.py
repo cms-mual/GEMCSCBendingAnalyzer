@@ -20,28 +20,6 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
 
 
-### This is the misalignment part
-process.GlobalTag.toGet = cms.VPSet(
-    cms.PSet(
-        connect = cms.string('sqlite_file:test.db'),
-        record = cms.string('GEMAlignmentRcd'),
-        tag = cms.string('GEMAlignment_test')
-    ),
-    cms.PSet(
-        connect = cms.string('sqlite_file:test.db'),
-        record = cms.string('GEMAlignmentErrorExtendedRcd'),
-        tag = cms.string('GEMAlignmentErrorExtended_test')
-    ),
-    cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
-)
-
-
-process.GEMGeometryESModule.applyAlignment = cms.bool(True)
-################################
-
-
-
-
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
 from FWCore.ParameterSet.VarParsing import VarParsing
@@ -56,7 +34,7 @@ options.parseArguments()
 process.maxEvents = cms.untracked.PSet(
   input = cms.untracked.int32(options.nEvents)
 )
-process.maxEvents.input = cms.untracked.int32(5000)
+process.maxEvents.input = cms.untracked.int32(-1)
 
 
 process.source = cms.Source("PoolSource", 
@@ -68,8 +46,7 @@ process.source = cms.Source("PoolSource",
 			)
 				)
 
-#process.source.fileNames.append('file:step3_skimed.root')
-process.source.fileNames.append('file:step2_1139.root')
+process.source.fileNames.append('file:cosmics_test.root')
 
 process.options = cms.untracked.PSet()
 
@@ -78,8 +55,9 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string("out_an
 process.analyser = cms.EDAnalyzer('analyser', 
 	process.MuonServiceProxy, 
 	gemRecHits = cms.InputTag("gemRecHits"), 
-	muons = cms.InputTag("muons"), 
-	vertexCollection = cms.InputTag("offlinePrimaryVerticies")
+        muons = cms.InputTag("SelectedMuons"),
+	#vertexCollection = cms.InputTag("offlinePrimaryVerticies")
 )
 
-process.p = cms.EndPath(process.analyser)
+#process.p = cms.EndPath(process.analyser)
+process.p = cms.Path(process.analyser)
