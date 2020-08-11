@@ -62,7 +62,6 @@ using namespace edm;
 
 struct MuonData
 {
-  cout << "Begin struct MuonData" << endl;
   void init();
   TTree* book(TTree *t);
 
@@ -76,6 +75,7 @@ struct MuonData
   int prop_layer_GE11;
   int prop_chamber_GE11;
   int prop_roll_GE11;
+
 /*
   float prop_inner_x_GE11;
   float prop_inner_y_GE11;
@@ -88,6 +88,7 @@ struct MuonData
   float prop_inner_chi2_GE11;
   float prop_inner_ndof_GE11;
 */
+
   //Prop from CSC
   float prop_CSC_x_GE11;
   float prop_CSC_y_GE11;
@@ -123,12 +124,13 @@ struct MuonData
   //bool has_fidcut_inner_GE11;
   bool has_fidcut_CSC_GE11;
 
+  int which_track_CSC_GE11;
+  //int which_track_inner_GE11;
 
 };
 
 void MuonData::init()
 {
-  cout << "Begin MuonData::init()" << endl;
   muon_charge = 9999;
   muon_pt = 9999;
 
@@ -138,6 +140,7 @@ void MuonData::init()
   prop_layer_GE11 = 99999;
   prop_chamber_GE11 = 99999;
   prop_roll_GE11 = 99999;
+
 /*
   prop_inner_x_GE11 = 99999;
   prop_inner_y_GE11 = 99999;
@@ -150,6 +153,7 @@ void MuonData::init()
   prop_inner_chi2_GE11 = 99999;
   prop_inner_ndof_GE11 = 99999;
 */
+
   prop_CSC_x_GE11 = 99999;
   prop_CSC_y_GE11 = 99999;
   prop_CSC_r_GE11 = 99999;
@@ -183,6 +187,10 @@ void MuonData::init()
   //has_fidcut_inner_GE11 = false;
   has_fidcut_CSC_GE11 = false;
 
+
+  which_track_CSC_GE11 = 999;
+  //which_track_inner_GE11 = 999;
+
 }
 
 TTree* MuonData::book(TTree *t){
@@ -198,6 +206,7 @@ TTree* MuonData::book(TTree *t){
   t->Branch("prop_layer_GE11", &prop_layer_GE11);
   t->Branch("prop_chamber_GE11", &prop_chamber_GE11);
   t->Branch("prop_roll_GE11", &prop_roll_GE11);
+
 /*
   t->Branch("prop_inner_x_GE11", &prop_inner_x_GE11);
   t->Branch("prop_inner_y_GE11", &prop_inner_y_GE11);
@@ -210,6 +219,7 @@ TTree* MuonData::book(TTree *t){
   t->Branch("prop_inner_chi2_GE11", &prop_inner_chi2_GE11);
   t->Branch("prop_inner_ndof_GE11", &prop_inner_ndof_GE11);
 */
+
 //Propogated CSC
   t->Branch("prop_CSC_x_GE11", &prop_CSC_x_GE11);
   t->Branch("prop_CSC_y_GE11", &prop_CSC_y_GE11);
@@ -244,6 +254,9 @@ TTree* MuonData::book(TTree *t){
   //t->Branch("has_fidcut_inner_GE11", &has_fidcut_inner_GE11);
   t->Branch("has_fidcut_CSC_GE11", &has_fidcut_CSC_GE11);
 
+  t->Branch("which_track_CSC_GE11", &which_track_CSC_GE11);
+  //t->Branch("which_track_inner_GE11", &which_track_inner_GE11);
+
   return t;
 }
 
@@ -257,7 +270,7 @@ private:
   virtual void beginJob() ;
   virtual void endJob() ;
 
-  //edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
+  edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
   edm::EDGetTokenT<edm::View<reco::Muon> > muons_;
 
   edm::Service<TFileService> fs;
@@ -280,7 +293,7 @@ analyser::analyser(const edm::ParameterSet& iConfig)
   theService_ = new MuonServiceProxy(serviceParameters, consumesCollector());
 
   muons_ = consumes<View<reco::Muon> >(iConfig.getParameter<InputTag>("muons"));
-  //gemRecHits_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("gemRecHits"));
+  gemRecHits_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("gemRecHits"));
 
   tree_data_ = data_.book(tree_data_);
 }
@@ -289,8 +302,6 @@ analyser::analyser(const edm::ParameterSet& iConfig)
 void
 analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
-  cout << "Begin analyze" << endl;
-
   iSetup.get<MuonGeometryRecord>().get(GEMGeometry_);
 
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",ttrackBuilder_);
@@ -298,15 +309,14 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   theService_->update(iSetup);
   auto propagator = theService_->propagator("SteppingHelixPropagatorAny");
 
-  //edm::Handle<GEMRecHitCollection> gemRecHits;
-  //iEvent.getByToken(gemRecHits_, gemRecHits);
+  edm::Handle<GEMRecHitCollection> gemRecHits;
+  iEvent.getByToken(gemRecHits_, gemRecHits);
 
   edm::Handle<View<reco::Muon> > muons;
   if (! iEvent.getByToken(muons_, muons)) return;
 
   if (muons->size() == 0) return;
 
-  cout << "Starting! Total muons = " << muons->size() << endl;
 
   for (size_t i = 0; i < muons->size(); ++i){
     cout << "new muon" << endl;
@@ -315,7 +325,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
     if (mu->pt() < 2.0) continue;
     if (not mu->standAloneMuon()) continue;
-
+    cout << "is standalone" << endl;
     data_.init();
 
 /*
@@ -331,13 +341,10 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       continue;
 */
 
-    cout << "is it outer track?" << endl;
     const reco::Track* muonTrack = 0;
     if ( mu->outerTrack().isNonnull() ){
       muonTrack = mu->outerTrack().get();
       }
-
-    cout << "yes" << endl;
     //reco::TransientTrack ttTrack_tracker = ttrackBuilder_->build(innerTrack); //tracker to GEM
 
     reco::TransientTrack ttTrack_CSC = ttrackBuilder_->build(muonTrack); //CSC to GEM
@@ -350,7 +357,15 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
 /*
       // Tracker propagated
-      TrajectoryStateOnSurface tsos_inner = propagator->propagate(ttTrack_tracker.outermostMeasurementState(),ch->surface());
+      TrajectoryStateOnSurface tsos_inner;
+      if ( innerTrack->outerPosition().Mag2() - innerTrack->innerPosition().Mag2() > 0){
+        tsos_inner = propagator->propagate(ttTrack_tracker.outermostMeasurementState(),ch->surface());
+        data_.which_track_inner_GE11 = "outer most";
+      }
+      else{
+        tsos_inner = propagator->propagate(ttTrack_tracker.innermostMeasurementState(),ch->surface());
+        data_.which_track_inner_GE11 = "inner most";
+      }
       if (!tsos_inner.isValid()) continue;
       GlobalPoint pos_global_inner = tsos_inner.globalPosition();
       LocalPoint pos_local_inner = ch->toLocal(tsos_inner.globalPosition());
@@ -360,7 +375,15 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 */
 
       // CSC propagated
-      TrajectoryStateOnSurface tsos_CSC = propagator->propagate(ttTrack_CSC.outermostMeasurementState(),ch->surface());
+      TrajectoryStateOnSurface tsos_CSC;
+      if ( muonTrack->outerPosition().Mag2() - muonTrack->innerPosition().Mag2() > 0){
+        tsos_CSC = propagator->propagate(ttTrack_CSC.outermostMeasurementState(),ch->surface());
+        data_.which_track_CSC_GE11 = 0;
+      }
+      else{
+        tsos_CSC = propagator->propagate(ttTrack_CSC.innermostMeasurementState(),ch->surface());
+        data_.which_track_CSC_GE11 = 1;
+      }
       if (!tsos_CSC.isValid()) continue;
       GlobalPoint pos_global_CSC = tsos_CSC.globalPosition();
       LocalPoint pos_local_CSC = ch->toLocal(tsos_CSC.globalPosition());
@@ -370,15 +393,18 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
      
 
       //if (bps.bounds().inside(pos2D_local_inner) and bps.bounds().inside(pos2D_local_CSC) and ch->id().station() == 1 and ch->id().ring() == 1){
-
       if (bps.bounds().inside(pos2D_local_CSC) and ch->id().station() == 1 and ch->id().ring() == 1){
+        cout << "Track used was " << data_.which_track_CSC_GE11 << endl;
+        cout << "pos_local_CSC = " << pos_local_CSC << endl;
+        cout << "bps.bounds().inside(pos2D_local_CSC) = " << bps.bounds().inside(pos2D_local_CSC) << endl;
 
+        cout << "charge is " << mu->charge() << endl;
         data_.muon_charge = mu->charge();
         data_.muon_pt = mu->pt();
-/*
-        data_.prop_inner_chi2_GE11 = innerTrack->chi2();
-        data_.prop_inner_ndof_GE11 = innerTrack->ndof();
-*/
+
+        //data_.prop_inner_chi2_GE11 = innerTrack->chi2();
+        //data_.prop_inner_ndof_GE11 = innerTrack->ndof();
+
         data_.prop_CSC_chi2_GE11 = muonTrack->chi2();
         data_.prop_CSC_ndof_GE11 = muonTrack->ndof();
 
@@ -391,7 +417,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
         const float cut_low = 130.0 + fidcut_y;
 
         const auto& etaPart_ch = GEMGeometry_->etaPartition(ch->id());
-//        float strip = etaPart_ch->strip(pos_local);
+        //float strip = etaPart_ch->strip(pos_local);
 
         // Tracker prop
         const float prop_y_to_center = etaPart_ch->toGlobal(etaPart_ch->centreOfStrip(etaPart_ch->nstrips()/2)).perp();
@@ -456,7 +482,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
 
 
-        /*
+        
         for (auto hit = gemRecHits->begin(); hit != gemRecHits->end(); hit++){
           if ( (hit)->geographicalId().det() == DetId::Detector::Muon && (hit)->geographicalId().subdetId() == MuonSubdetId::GEM){
             GEMDetId gemid((hit)->geographicalId());
@@ -504,7 +530,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
             }
           }
         }
-        */
+        
       }
     }
     cout << "Filling!" << endl;
