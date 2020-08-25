@@ -147,6 +147,7 @@ struct MuonData
 
   int which_track_CSC_GE11;
   //int which_track_inner_GE11;
+  int hasME11;
 
 };
 
@@ -231,6 +232,7 @@ void MuonData::init()
 
   which_track_CSC_GE11 = 999;
   //which_track_inner_GE11 = 999;
+  hasME11 = 0;
 
 }
 
@@ -316,6 +318,8 @@ TTree* MuonData::book(TTree *t){
 
   t->Branch("which_track_CSC_GE11", &which_track_CSC_GE11);
   //t->Branch("which_track_inner_GE11", &which_track_inner_GE11);
+ 
+  t->Branch("hasME11", &hasME11);
 
   return t;
 }
@@ -389,6 +393,15 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     data_.init();
     data_.isGEMmuon = mu->isGEMMuon();
 
+    auto matches = mu->matches();
+    for ( auto MCM : matches){
+      if (MCM.detector() != 2) continue;
+      for( auto MSM : MCM.segmentMatches){
+        auto cscSeg = MSM.cscSegmentRef;
+        auto cscDetID = cscSeg->cscDetId();
+        if (cscDetID.station() == 1 and cscDetID.ring() == 1) data_.hasME11 = 1;
+      }
+    }
 /*
     if (not mu->innerTrack()) continue;
     const reco::Track* innerTrack = mu->track().get();
@@ -419,7 +432,6 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
     float count = 0;
 
-    float eta_count = 0;
     for (const auto& ch : GEMGeometry_->etaPartitions()) {
       //eta_count ++;
       //cout << "eta count = " << eta_count << endl;
