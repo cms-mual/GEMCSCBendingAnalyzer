@@ -149,6 +149,9 @@ struct MuonData
   //int which_track_inner_GE11;
   int hasME11;
 
+  unsigned long long  evtNum;
+
+  int nCSCSeg;
 };
 
 void MuonData::init()
@@ -233,7 +236,10 @@ void MuonData::init()
   which_track_CSC_GE11 = 999;
   //which_track_inner_GE11 = 999;
   hasME11 = 0;
+ 
+  evtNum = 0;
 
+  nCSCSeg = 0;
 }
 
 TTree* MuonData::book(TTree *t){
@@ -321,6 +327,10 @@ TTree* MuonData::book(TTree *t){
  
   t->Branch("hasME11", &hasME11);
 
+  t->Branch("evtNum", &evtNum);
+
+  t->Branch("nCSCSeg", &nCSCSeg); 
+
   return t;
 }
 
@@ -392,16 +402,19 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     cout << "is standalone" << endl;
     data_.init();
     data_.isGEMmuon = mu->isGEMMuon();
-
+    int tmpNCSCSeg = 0;
     auto matches = mu->matches();
     for ( auto MCM : matches){
       if (MCM.detector() != 2) continue;
       for( auto MSM : MCM.segmentMatches){
         auto cscSeg = MSM.cscSegmentRef;
         auto cscDetID = cscSeg->cscDetId();
+        tmpNCSCSeg++;
         if (cscDetID.station() == 1 and cscDetID.ring() == 1) data_.hasME11 = 1;
       }
     }
+    data_.nCSCSeg = tmpNCSCSeg;
+    data_.evtNum = iEvent.eventAuxiliary().event();
 /*
     if (not mu->innerTrack()) continue;
     const reco::Track* innerTrack = mu->track().get();
