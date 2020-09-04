@@ -148,7 +148,9 @@ struct MuonData
   int which_track_CSC_GE11;
   //int which_track_inner_GE11;
   int hasME11;
-  int hasME11B;
+  int hasME11RecHit;  
+  int hasME11A;
+  int hasME11ARecHit;  
 
   unsigned long long  evtNum;
 
@@ -237,8 +239,10 @@ void MuonData::init()
   which_track_CSC_GE11 = 999;
   //which_track_inner_GE11 = 999;
   hasME11 = 0;
-  hasME11B = 0;
- 
+  hasME11RecHit = 0; 
+  hasME11A = 0;
+  hasME11ARecHit = 0; 
+
   evtNum = 0;
 
   nCSCSeg = 0;
@@ -328,7 +332,9 @@ TTree* MuonData::book(TTree *t){
   //t->Branch("which_track_inner_GE11", &which_track_inner_GE11);
  
   t->Branch("hasME11", &hasME11);
-  t->Branch("hasME11B", &hasME11);
+  t->Branch("hasME11RecHit", &hasME11RecHit);
+  t->Branch("hasME11A", &hasME11A);
+  t->Branch("hasME11ARecHit", &hasME11ARecHit);
 
   t->Branch("evtNum", &evtNum);
 
@@ -413,10 +419,17 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
         auto cscSeg = MSM.cscSegmentRef;
         auto cscDetID = cscSeg->cscDetId();
         tmpNCSCSeg++;
-        if (cscDetID.station() == 1 and cscDetID.ring() == 1) data_.hasME11 = 1;
-        if (cscDetID.station() == 1 and cscDetID.ring() == 4) data_.hasME11B = 1;
+        if (cscDetID.station() == 1 and cscDetID.ring() == 1){
+          data_.hasME11 = 1;
+          for ( auto rh : cscSeg->specificRecHits()){
+            if (rh.cscDetId().ring() == 1) data_.hasME11RecHit = 1;
+            if (rh.cscDetId().ring() == 4) data_.hasME11ARecHit = 1;
+          }
+        }
+        if (cscDetID.station() == 1 and cscDetID.ring() == 4) data_.hasME11A = 1;
       }
     }
+    
     data_.nCSCSeg = tmpNCSCSeg;
     data_.evtNum = iEvent.eventAuxiliary().event();
 /*
