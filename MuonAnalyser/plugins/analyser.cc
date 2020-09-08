@@ -411,14 +411,13 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     cout << "is standalone" << endl;
     data_.init();
     data_.isGEMmuon = mu->isGEMMuon();
-    int tmpNCSCSeg = 0;
+    data_.nCSCSeg = mu->numberOfSegments(1,2) + mu->numberOfSegments(2,2) + mu->numberOfSegments(3,2) + mu->numberOfSegments(4,2);
     auto matches = mu->matches();
     for ( auto MCM : matches){
       if (MCM.detector() != 2) continue;
       for( auto MSM : MCM.segmentMatches){
         auto cscSeg = MSM.cscSegmentRef;
         auto cscDetID = cscSeg->cscDetId();
-        tmpNCSCSeg++;
         if (cscDetID.station() == 1 and cscDetID.ring() == 1){
           data_.hasME11 = 1;
           for ( auto rh : cscSeg->specificRecHits()){
@@ -430,7 +429,6 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       }
     }
     
-    data_.nCSCSeg = tmpNCSCSeg;
     data_.evtNum = iEvent.eventAuxiliary().event();
 /*
     if (not mu->innerTrack()) continue;
