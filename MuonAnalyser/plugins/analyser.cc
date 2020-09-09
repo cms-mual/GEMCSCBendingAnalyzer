@@ -155,6 +155,7 @@ struct MuonData
   unsigned long long  evtNum;
 
   int nCSCSeg;
+  int nDTSeg;
 };
 
 void MuonData::init()
@@ -246,6 +247,7 @@ void MuonData::init()
   evtNum = 0;
 
   nCSCSeg = 0;
+  nDTSeg = 0;
 }
 
 TTree* MuonData::book(TTree *t){
@@ -339,6 +341,7 @@ TTree* MuonData::book(TTree *t){
   t->Branch("evtNum", &evtNum);
 
   t->Branch("nCSCSeg", &nCSCSeg); 
+  t->Branch("nDTSeg", &nDTSeg); 
 
   return t;
 }
@@ -412,6 +415,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     data_.init();
     data_.isGEMmuon = mu->isGEMMuon();
     data_.nCSCSeg = mu->numberOfSegments(1,2) + mu->numberOfSegments(2,2) + mu->numberOfSegments(3,2) + mu->numberOfSegments(4,2);
+    data_.nDTSeg = mu->numberOfSegments(1,1) + mu->numberOfSegments(2,1) + mu->numberOfSegments(3,1) + mu->numberOfSegments(4,1);
     auto matches = mu->matches();
     for ( auto MCM : matches){
       if (MCM.detector() != 2) continue;
