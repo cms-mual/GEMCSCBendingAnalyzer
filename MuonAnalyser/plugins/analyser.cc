@@ -144,6 +144,7 @@ struct MuonData
   int nCSCSeg;
   int nDTSeg;
   int CSCSeg_region;
+  int num_props;
 
   bool region_mismatch;
 };
@@ -229,6 +230,7 @@ void MuonData::init()
   nCSCSeg = 0;
   nDTSeg = 0;
   CSCSeg_region = 0;
+  num_props = 0;
 
   region_mismatch = 1;
 }
@@ -318,6 +320,7 @@ TTree* MuonData::book(TTree *t){
   t->Branch("nCSCSeg", &nCSCSeg); 
   t->Branch("nDTSeg", &nDTSeg); 
   t->Branch("CSCSeg_region", &CSCSeg_region);
+  t->Branch("num_props", &num_props);
 
   t->Branch("region_mismatch", &region_mismatch);
 
@@ -442,7 +445,6 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     reco::TransientTrack ttTrack_CSC = ttrackBuilder_->build(muonTrack); //CSC to GEM
 
     float count = 0;
-
     for (const auto& ch : GEMGeometry_->etaPartitions()) {
       //eta_count ++;
       //cout << "eta count = " << eta_count << endl;
@@ -492,164 +494,156 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
      
 
       //if (bps.bounds().inside(pos2D_local_inner) and bps.bounds().inside(pos2D_local_CSC) and ch->id().station() == 1 and ch->id().ring() == 1){
-      if (bps.bounds().inside(pos2D_local_CSC) and ch->id().station() == 1 and ch->id().ring() == 1){
-      //if (ch->id().station() == 1 and ch->id().ring() == 1){
-        //cout << "Track used was " << data_.which_track_CSC_GE11 << endl;
-        cout << "pos_local_CSC = " << pos_local_CSC << endl;
-        //cout << "bps.bounds().inside(pos2D_local_CSC) = " << bps.bounds().inside(pos2D_local_CSC) << endl;
+      if (!(bps.bounds().inside(pos2D_local_CSC) and ch->id().station() == 1 and ch->id().ring() == 1)) continue;
+      //cout << "Track used was " << data_.which_track_CSC_GE11 << endl;
+      cout << "pos_local_CSC = " << pos_local_CSC << endl;
+      //cout << "bps.bounds().inside(pos2D_local_CSC) = " << bps.bounds().inside(pos2D_local_CSC) << endl;
 
-        //cout << "charge is " << mu->charge() << endl;
-        data_.muon_charge = mu->charge();
-        data_.muon_pt = mu->pt();
+      //cout << "charge is " << mu->charge() << endl;
+      data_.num_props++;
+      data_.muon_charge = mu->charge();
+      data_.muon_pt = mu->pt();
 
-        //data_.prop_inner_chi2_GE11 = innerTrack->chi2();
-        //data_.prop_inner_ndof_GE11 = innerTrack->ndof();
+      //data_.prop_inner_chi2_GE11 = innerTrack->chi2();
+      //data_.prop_inner_ndof_GE11 = innerTrack->ndof();
 
-        data_.prop_CSC_chi2_GE11 = muonTrack->chi2();
-        data_.prop_CSC_ndof_GE11 = muonTrack->ndof();
-        data_.prop_CSC_chi2ndof_GE11 = data_.prop_CSC_chi2_GE11/data_.prop_CSC_ndof_GE11;
+      data_.prop_CSC_chi2_GE11 = muonTrack->chi2();
+      data_.prop_CSC_ndof_GE11 = muonTrack->ndof();
+      data_.prop_CSC_chi2ndof_GE11 = data_.prop_CSC_chi2_GE11/data_.prop_CSC_ndof_GE11;
 
 
-        const float fidcut_angle = 1.0;
-        const float cut_ang = 5.0 - fidcut_angle;
-        const float cut_chamber = 5.0;
-        //const float fidcut_y = 5.0;
-        //const float cut_even_high = 250.0 - fidcut_y;
-        //const float cut_odd_high = 250.0 - fidcut_y;
-        //const float cut_even_low = 130.0 + fidcut_y;
-        //const float cut_odd_low = 130.0 + fidcut_y;
+      const float fidcut_angle = 1.0;
+      const float cut_ang = 5.0 - fidcut_angle;
+      const float cut_chamber = 5.0;
+      //const float fidcut_y = 5.0;
+      //const float cut_even_high = 250.0 - fidcut_y;
+      //const float cut_odd_high = 250.0 - fidcut_y;
+      //const float cut_even_low = 130.0 + fidcut_y;
+      //const float cut_odd_low = 130.0 + fidcut_y;
 
-        const auto& etaPart_ch = GEMGeometry_->etaPartition(ch->id());
-        //float strip = etaPart_ch->strip(pos_local);
+      const auto& etaPart_ch = GEMGeometry_->etaPartition(ch->id());
+      //float strip = etaPart_ch->strip(pos_local);
 
-        // Tracker prop
-        const float prop_y_to_center = etaPart_ch->toGlobal(etaPart_ch->centreOfStrip(etaPart_ch->nstrips()/2)).perp();
-        //LocalPoint local_to_center_inner(pos_local_inner.x(), prop_y_to_center + pos_local_inner.y(), 0);
-        //const float prop_inner_localphi_rad = (3.14159265/2.) - local_to_center_inner.phi();
-        //const float prop_inner_localphi_deg = prop_inner_localphi_rad*180/3.14169265;
-        count++;
+      // Tracker prop
+      const float prop_y_to_center = etaPart_ch->toGlobal(etaPart_ch->centreOfStrip(etaPart_ch->nstrips()/2)).perp();
+      //LocalPoint local_to_center_inner(pos_local_inner.x(), prop_y_to_center + pos_local_inner.y(), 0);
+      //const float prop_inner_localphi_rad = (3.14159265/2.) - local_to_center_inner.phi();
+      //const float prop_inner_localphi_deg = prop_inner_localphi_rad*180/3.14169265;
+      count++;
 
-        data_.has_prop_GE11 = true;
-        data_.prop_region_GE11 = ch->id().region();
-        data_.prop_station_GE11 = ch->id().station();
-        data_.prop_layer_GE11 = ch->id().layer();
-        data_.prop_chamber_GE11 = ch->id().chamber();
-        data_.prop_roll_GE11 = ch->id().roll();
+      data_.has_prop_GE11 = true;
+      data_.prop_region_GE11 = ch->id().region();
+      data_.prop_station_GE11 = ch->id().station();
+      data_.prop_layer_GE11 = ch->id().layer();
+      data_.prop_chamber_GE11 = ch->id().chamber();
+      data_.prop_roll_GE11 = ch->id().roll();
 
 
 
 /*
-        data_.prop_inner_x_GE11 = pos_global_inner.x();
-        data_.prop_inner_y_GE11 = pos_global_inner.y();
-        data_.prop_inner_r_GE11 = pos_global_inner.mag();
-        data_.prop_inner_localx_GE11 = pos_local_inner.x();
-        data_.prop_inner_localy_GE11 = pos_local_inner.y();
-        data_.prop_inner_y_adjusted_GE11 = prop_y_to_center + pos_local_inner.y();
-        data_.prop_inner_localphi_rad_GE11 = prop_inner_localphi_rad;
-        data_.prop_inner_localphi_deg_GE11 = prop_inner_localphi_deg;
+      data_.prop_inner_x_GE11 = pos_global_inner.x();
+      data_.prop_inner_y_GE11 = pos_global_inner.y();
+      data_.prop_inner_r_GE11 = pos_global_inner.mag();
+      data_.prop_inner_localx_GE11 = pos_local_inner.x();
+      data_.prop_inner_localy_GE11 = pos_local_inner.y();
+      data_.prop_inner_y_adjusted_GE11 = prop_y_to_center + pos_local_inner.y();
+      data_.prop_inner_localphi_rad_GE11 = prop_inner_localphi_rad;
+      data_.prop_inner_localphi_deg_GE11 = prop_inner_localphi_deg;
 
-        if (ch->id().chamber()%2 == 0){
-          if (prop_inner_localphi_deg > -cut_ang && prop_inner_localphi_deg < cut_ang && prop_y_to_center + pos_local_inner.y() > cut_low && prop_y_to_center + pos_local_inner.y() < cut_even_high){
-            data_.has_fidcut_inner_GE11 = true;
-          }
+      if (ch->id().chamber()%2 == 0){
+        if (prop_inner_localphi_deg > -cut_ang && prop_inner_localphi_deg < cut_ang && prop_y_to_center + pos_local_inner.y() > cut_low && prop_y_to_center + pos_local_inner.y() < cut_even_high){
+          data_.has_fidcut_inner_GE11 = true;
         }
-        if (ch->id().chamber()%2 == 1){
-          if (prop_inner_localphi_deg > -cut_ang && prop_inner_localphi_deg < cut_ang && prop_y_to_center + pos_local_inner.y() > cut_low && prop_y_to_center + pos_local_inner.y() < cut_odd_high){
-            data_.has_fidcut_inner_GE11 = true;
-          }
+      }
+      if (ch->id().chamber()%2 == 1){
+        if (prop_inner_localphi_deg > -cut_ang && prop_inner_localphi_deg < cut_ang && prop_y_to_center + pos_local_inner.y() > cut_low && prop_y_to_center + pos_local_inner.y() < cut_odd_high){
+          data_.has_fidcut_inner_GE11 = true;
         }
+      }
 */
-        // CSC prop
-        LocalPoint local_to_center_CSC(pos_local_CSC.x(), prop_y_to_center + pos_local_CSC.y(), 0);
-        const float prop_CSC_localphi_rad = (3.14159265/2.) - local_to_center_CSC.phi();
-        const float prop_CSC_localphi_deg = prop_CSC_localphi_rad*180/3.14169265;
+      // CSC prop
+      LocalPoint local_to_center_CSC(pos_local_CSC.x(), prop_y_to_center + pos_local_CSC.y(), 0);
+      const float prop_CSC_localphi_rad = (3.14159265/2.) - local_to_center_CSC.phi();
+      const float prop_CSC_localphi_deg = prop_CSC_localphi_rad*180/3.14169265;
 
 
-        data_.prop_CSC_x_GE11 = pos_global_CSC.x();
-        data_.prop_CSC_y_GE11 = pos_global_CSC.y();
-        data_.prop_CSC_r_GE11 = pos_global_CSC.mag();
-        data_.prop_CSC_localx_GE11 = pos_local_CSC.x();
-        data_.prop_CSC_localy_GE11 = pos_local_CSC.y();
-        data_.prop_CSC_y_adjusted_GE11 = prop_y_to_center + pos_local_CSC.y();
-        data_.prop_CSC_localphi_rad_GE11 = prop_CSC_localphi_rad;
-        data_.prop_CSC_localphi_deg_GE11 = prop_CSC_localphi_deg;
+      data_.prop_CSC_x_GE11 = pos_global_CSC.x();
+      data_.prop_CSC_y_GE11 = pos_global_CSC.y();
+      data_.prop_CSC_r_GE11 = pos_global_CSC.mag();
+      data_.prop_CSC_localx_GE11 = pos_local_CSC.x();
+      data_.prop_CSC_localy_GE11 = pos_local_CSC.y();
+      data_.prop_CSC_y_adjusted_GE11 = prop_y_to_center + pos_local_CSC.y();
+      data_.prop_CSC_localphi_rad_GE11 = prop_CSC_localphi_rad;
+      data_.prop_CSC_localphi_deg_GE11 = prop_CSC_localphi_deg;
 
+      auto& parameters(ch->specs()->parameters());
+      float height(parameters[2]);
 
-        auto& parameters(ch->specs()->parameters());
-        float height(parameters[2]);
-
-
-        if ((abs(prop_CSC_localphi_deg) < cut_ang && (pos_local_CSC.y()) < (height - cut_chamber) && ch->id().roll() == 1) || (abs(prop_CSC_localphi_deg) < cut_ang && (pos_local_CSC.y()) > (height - cut_chamber) && ch->id().roll() == 8)){
-          data_.has_fidcut_CSC_GE11 = true;
-        }
-        else{
-          data_.has_fidcut_CSC_GE11 = false;
-        }
-
+      if ((abs(prop_CSC_localphi_deg) < cut_ang && (pos_local_CSC.y()) < (height - cut_chamber) && ch->id().roll() == 1) || (abs(prop_CSC_localphi_deg) < cut_ang && (pos_local_CSC.y()) > (height - cut_chamber) && ch->id().roll() == 8)){
+        data_.has_fidcut_CSC_GE11 = true;
+      }
+      else{
+        data_.has_fidcut_CSC_GE11 = false;
+      }
 
 
 
-
-
-        //if (ch->id().chamber()%2 == 0){
-        //  if (prop_CSC_localphi_deg > -cut_ang && prop_CSC_localphi_deg < cut_ang && prop_y_to_center + pos_local_CSC.y() > cut_even_low && prop_y_to_center + pos_local_CSC.y() < cut_even_high){
-        //    data_.has_fidcut_CSC_GE11 = true;
-        //  }
-        //}
-        //if (ch->id().chamber()%2 == 1){
-        //  if (ch->id().roll() == 1 && ){
-        //    if (prop_CSC_localphi_deg > -cut_ang && prop_CSC_localphi_deg < cut_ang && prop_y_to_center + pos_local_CSC.y() > cut_odd_low && prop_y_to_center + pos_local_CSC.y() < cut_odd_high){
-        //      data_.has_fidcut_CSC_GE11 = true;
-        //    }
-        //  }
-        //}
-
-
-
+      //if (ch->id().chamber()%2 == 0){
+      //  if (prop_CSC_localphi_deg > -cut_ang && prop_CSC_localphi_deg < cut_ang && prop_y_to_center + pos_local_CSC.y() > cut_even_low && prop_y_to_center + pos_local_CSC.y() < cut_even_high){
+      //    data_.has_fidcut_CSC_GE11 = true;
+      //  }
+      //}
+      //if (ch->id().chamber()%2 == 1){
+      //  if (ch->id().roll() == 1 && ){
+      //    if (prop_CSC_localphi_deg > -cut_ang && prop_CSC_localphi_deg < cut_ang && prop_y_to_center + pos_local_CSC.y() > cut_odd_low && prop_y_to_center + pos_local_CSC.y() < cut_odd_high){
+      //      data_.has_fidcut_CSC_GE11 = true;
+      //    }
+      //  }
+      //}
 
         
-        for (auto hit = gemRecHits->begin(); hit != gemRecHits->end(); hit++){
-          if ( (hit)->geographicalId().det() == DetId::Detector::Muon && (hit)->geographicalId().subdetId() == MuonSubdetId::GEM){
-            GEMDetId gemid((hit)->geographicalId());
-            if (gemid.station() == ch->id().station() and gemid.chamber() == ch->id().chamber() and gemid.layer() == ch->id().layer() and abs(gemid.roll() - ch->id().roll()) <= 1 and gemid.region() == ch->id().region()){
-              cout << "starting rechit" << endl;
-              const auto& etaPart = GEMGeometry_->etaPartition(gemid);
-              float strip = etaPart->strip(hit->localPosition());
-              float stripAngle = etaPart->specificTopology().stripAngle(strip);
-              float cosAngle = cos(stripAngle);
-              float sinAngle = sin(stripAngle);
+      data_.has_rechit_GE11 = false;
+      for (auto hit = gemRecHits->begin(); hit != gemRecHits->end(); hit++){
+        if ( (hit)->geographicalId().det() == DetId::Detector::Muon && (hit)->geographicalId().subdetId() == MuonSubdetId::GEM){
+          GEMDetId gemid((hit)->geographicalId());
+          if (gemid.station() == ch->id().station() and gemid.chamber() == ch->id().chamber() and gemid.layer() == ch->id().layer() and abs(gemid.roll() - ch->id().roll()) <= 1 and gemid.region() == ch->id().region()){
+            cout << "starting rechit" << endl;
+            const auto& etaPart = GEMGeometry_->etaPartition(gemid);
+            float strip = etaPart->strip(hit->localPosition());
+            float stripAngle = etaPart->specificTopology().stripAngle(strip);
+            float cosAngle = cos(stripAngle);
+            float sinAngle = sin(stripAngle);
 
-              float rechit_y_to_center = etaPart->toGlobal(etaPart->centreOfStrip(etaPart->nstrips()/2)).perp();
-              LocalPoint local_to_center((hit)->localPosition().x(), rechit_y_to_center + (hit)->localPosition().y(), 0);
-              float rechit_localphi_rad = (3.14159265/2.) - local_to_center.phi();
-              float rechit_localphi_deg = rechit_localphi_rad*180/3.14159265;
-              float deltay_roll =  etaPart_ch->toGlobal(etaPart_ch->centreOfStrip(etaPart_ch->nstrips()/2)).perp() - etaPart->toGlobal(etaPart->centreOfStrip(etaPart->nstrips()/2)).perp();
-
-
-              if (ch->id().station() == 1 and ch->id().ring() == 1 and fabs((hit)->localPosition().x() - pos_local_CSC.x()) < 999.0){
-
-                if (abs(data_.RdPhi_CSC_GE11) > abs(cosAngle * (pos_local_CSC.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_CSC.y() + deltay_roll))){
-                  std::cout << "Overwrite" << std::endl;
+            float rechit_y_to_center = etaPart->toGlobal(etaPart->centreOfStrip(etaPart->nstrips()/2)).perp();
+            LocalPoint local_to_center((hit)->localPosition().x(), rechit_y_to_center + (hit)->localPosition().y(), 0);
+            float rechit_localphi_rad = (3.14159265/2.) - local_to_center.phi();
+            float rechit_localphi_deg = rechit_localphi_rad*180/3.14159265;
+            float deltay_roll =  etaPart_ch->toGlobal(etaPart_ch->centreOfStrip(etaPart_ch->nstrips()/2)).perp() - etaPart->toGlobal(etaPart->centreOfStrip(etaPart->nstrips()/2)).perp();
 
 
-                  data_.has_rechit_GE11 = true;
-                  data_.rechit_region_GE11 = gemid.region();
-                  data_.rechit_station_GE11 = gemid.station();
-                  data_.rechit_layer_GE11 = gemid.layer();
-                  data_.rechit_chamber_GE11 = gemid.chamber();
-                  data_.rechit_roll_GE11 = gemid.roll();
-                  data_.rechit_x_GE11 = etaPart->toGlobal((hit)->localPosition()).x();
-                  data_.rechit_y_GE11 = etaPart->toGlobal((hit)->localPosition()).y();
-                  data_.rechit_r_GE11 = etaPart->toGlobal((hit)->localPosition()).mag();
-                  data_.rechit_localx_GE11 = (hit)->localPosition().x();
-                  data_.rechit_localy_GE11 = (hit)->localPosition().y();
-                  data_.rechit_y_adjusted_GE11 = rechit_y_to_center + (hit)->localPosition().y();
-                  data_.rechit_localphi_rad_GE11 = rechit_localphi_rad;
-                  data_.rechit_localphi_deg_GE11 = rechit_localphi_deg;
-                  //data_.RdPhi_inner_GE11 = cosAngle * (pos_local_inner.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_inner.y() + deltay_roll);
-                  data_.RdPhi_CSC_GE11 = cosAngle * (pos_local_CSC.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_CSC.y() + deltay_roll);
-                  data_.det_id = gemid.region()*(gemid.station()*100 + gemid.chamber());
-                }
+            if (ch->id().station() == 1 and ch->id().ring() == 1 and fabs((hit)->localPosition().x() - pos_local_CSC.x()) < 999.0){
+
+              if (abs(data_.RdPhi_CSC_GE11) > abs(cosAngle * (pos_local_CSC.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_CSC.y() + deltay_roll))){
+                std::cout << "Overwrite" << std::endl;
+
+
+                data_.has_rechit_GE11 = true;
+                data_.rechit_region_GE11 = gemid.region();
+                data_.rechit_station_GE11 = gemid.station();
+                data_.rechit_layer_GE11 = gemid.layer();
+                data_.rechit_chamber_GE11 = gemid.chamber();
+                data_.rechit_roll_GE11 = gemid.roll();
+                data_.rechit_x_GE11 = etaPart->toGlobal((hit)->localPosition()).x();
+                data_.rechit_y_GE11 = etaPart->toGlobal((hit)->localPosition()).y();
+                data_.rechit_r_GE11 = etaPart->toGlobal((hit)->localPosition()).mag();
+                data_.rechit_localx_GE11 = (hit)->localPosition().x();
+                data_.rechit_localy_GE11 = (hit)->localPosition().y();
+                data_.rechit_y_adjusted_GE11 = rechit_y_to_center + (hit)->localPosition().y();
+                data_.rechit_localphi_rad_GE11 = rechit_localphi_rad;
+                data_.rechit_localphi_deg_GE11 = rechit_localphi_deg;
+                //data_.RdPhi_inner_GE11 = cosAngle * (pos_local_inner.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_inner.y() + deltay_roll);
+                data_.RdPhi_CSC_GE11 = cosAngle * (pos_local_CSC.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_CSC.y() + deltay_roll);
+                data_.det_id = gemid.region()*(gemid.station()*100 + gemid.chamber());
               }
             }
           }
