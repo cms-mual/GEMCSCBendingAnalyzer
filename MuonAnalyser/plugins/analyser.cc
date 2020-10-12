@@ -384,7 +384,8 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
   if (muons->size() == 0) return;
 
-
+  int num_props = 0;
+  int muons_with_cscSeg = 0;
   for (size_t i = 0; i < muons->size(); ++i){
     cout << "new muon" << endl;
     edm::RefToBase<reco::Muon> muRef = muons->refAt(i);
@@ -397,6 +398,9 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     data_.isGEMmuon = mu->isGEMMuon();
     data_.nCSCSeg = mu->numberOfSegments(1,2) + mu->numberOfSegments(2,2) + mu->numberOfSegments(3,2) + mu->numberOfSegments(4,2);
     data_.nDTSeg = mu->numberOfSegments(1,1) + mu->numberOfSegments(2,1) + mu->numberOfSegments(3,1) + mu->numberOfSegments(4,1);
+    if (data_.nCSCSeg > 0){
+      muons_with_cscSeg++;
+    }
     auto matches = mu->matches();
     for ( auto MCM : matches){
       if (MCM.detector() != 2) continue;
@@ -603,7 +607,10 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
         
       data_.has_rechit_GE11 = false;
+      int rechit_counter = 0;
+      int rechit_matches = 0;
       for (auto hit = gemRecHits->begin(); hit != gemRecHits->end(); hit++){
+        rechit_counter++;
         if ( (hit)->geographicalId().det() == DetId::Detector::Muon && (hit)->geographicalId().subdetId() == MuonSubdetId::GEM){
           GEMDetId gemid((hit)->geographicalId());
           if (gemid.station() == ch->id().station() and gemid.chamber() == ch->id().chamber() and gemid.layer() == ch->id().layer() and abs(gemid.roll() - ch->id().roll()) <= 1 and gemid.region() == ch->id().region()){
@@ -624,6 +631,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
             if (ch->id().station() == 1 and ch->id().ring() == 1 and fabs((hit)->localPosition().x() - pos_local_CSC.x()) < 999.0){
 
               if (abs(data_.RdPhi_CSC_GE11) > abs(cosAngle * (pos_local_CSC.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_CSC.y() + deltay_roll))){
+                rechit_matches++;
                 std::cout << "Overwrite" << std::endl;
 
 
@@ -649,12 +657,17 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
           }
         } 
       }
+      std::cout << "Num of rechits = " << rechit_counter << std::endl;
+      std::cout << "Num of matches = " << rechit_matches << std::endl;
+      num_props++;
       cout << "Filling!" << endl;
       tree_data_->Fill();
     }
     //cout << "Filling!" << endl;
     //tree_data_->Fill();
   }
+  std::cout << "Muons with cscSegs = " << muons_with_cscSeg << std::endl;
+  std::cout << "Muons with prop to GE11 = " << num_props << std::endl;
 }
 
 void analyser::beginJob(){}
