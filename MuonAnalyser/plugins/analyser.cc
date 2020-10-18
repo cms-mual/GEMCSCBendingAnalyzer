@@ -147,6 +147,11 @@ struct MuonData
   int num_props;
 
   bool region_mismatch;
+
+  float distance_global;
+  float distance_chamber;
+  float distance_eta;
+  float distance_phi;
 };
 
 void MuonData::init()
@@ -233,6 +238,11 @@ void MuonData::init()
   num_props = 0;
 
   region_mismatch = 1;
+
+  distance_global = 999;
+  distance_chamber = 999;
+  distance_eta = 999;
+  distance_phi = 999;
 }
 
 TTree* MuonData::book(TTree *t){
@@ -323,6 +333,11 @@ TTree* MuonData::book(TTree *t){
   t->Branch("num_props", &num_props);
 
   t->Branch("region_mismatch", &region_mismatch);
+
+  t->Branch("distance_global", &distance_global);
+  t->Branch("distance_chamber", &distance_chamber);
+  t->Branch("distance_eta", &distance_eta);
+  t->Branch("distance_phi", &distance_phi);
 
   return t;
 }
@@ -475,7 +490,9 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 */
 
       // CSC propagated
+      // Switching for test
       TrajectoryStateOnSurface tsos_CSC;
+      /*
       if ( muonTrack->outerPosition().Mag2() - muonTrack->innerPosition().Mag2() > 0){
         tsos_CSC = propagator->propagate(ttTrack_CSC.outermostMeasurementState(),ch->surface());
         data_.which_track_CSC_GE11 = 0;
@@ -484,6 +501,26 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
         tsos_CSC = propagator->propagate(ttTrack_CSC.innermostMeasurementState(),ch->surface());
         data_.which_track_CSC_GE11 = 1;
       }
+      */
+
+
+
+
+
+
+      if ( muonTrack->outerPosition().Mag2() - muonTrack->innerPosition().Mag2() > 0){
+        tsos_CSC = propagator->propagate(ttTrack_CSC.innermostMeasurementState(),ch->surface());
+        data_.which_track_CSC_GE11 = 0;
+      }
+      else{
+        tsos_CSC = propagator->propagate(ttTrack_CSC.outermostMeasurementState(),ch->surface());
+        data_.which_track_CSC_GE11 = 1;
+      }
+      //Switched  Test ended here
+
+
+
+
       if (!tsos_CSC.isValid()) continue;
       if ((ch->id().region() == 1 && data_.CSCSeg_region == 1) || (ch->id().region() == -1 && data_.CSCSeg_region == 2)){
         data_.region_mismatch = 0;
@@ -614,6 +651,8 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
         if ( (hit)->geographicalId().det() == DetId::Detector::Muon && (hit)->geographicalId().subdetId() == MuonSubdetId::GEM){
           GEMDetId gemid((hit)->geographicalId());
           if (gemid.station() == ch->id().station() and gemid.chamber() == ch->id().chamber() and gemid.layer() == ch->id().layer() and abs(gemid.roll() - ch->id().roll()) <= 1 and gemid.region() == ch->id().region()){
+          //if (gemid.station() == ch->id().station() and gemid.chamber() == ch->id().chamber() and gemid.layer() == ch->id().layer() and gemid.region() == ch->id().region()){
+          //if (gemid.layer() == ch->id().layer() and gemid.region() == ch->id().region()){
             cout << "starting rechit" << endl;
             const auto& etaPart = GEMGeometry_->etaPartition(gemid);
             float strip = etaPart->strip(hit->localPosition());
@@ -631,6 +670,7 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
             if (ch->id().station() == 1 and ch->id().ring() == 1 and fabs((hit)->localPosition().x() - pos_local_CSC.x()) < 999.0){
 
               if (abs(data_.RdPhi_CSC_GE11) > abs(cosAngle * (pos_local_CSC.x() - (hit)->localPosition().x()) + sinAngle * (pos_local_CSC.y() + deltay_roll))){
+              //if ((pow(data_.rechit_x_GE11 - data_.prop_CSC_x_GE11, 2) + pow(data_.rechit_y_GE11 - data_.prop_CSC_y_GE11, 2)) > (pow(etaPart->toGlobal((hit)->localPosition()).x() - data_.prop_CSC_x_GE11, 2) + pow(etaPart->toGlobal((hit)->localPosition()).y() - data_.prop_CSC_y_GE11, 2))){
                 rechit_matches++;
                 std::cout << "Overwrite" << std::endl;
 
@@ -657,6 +697,33 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
           }
         } 
       }
+
+
+      if (data_.has_rechit_GE11 == false){
+        data_.distance_global = 999;
+        data_.distance_chamber = 999;
+        data_.distance_eta = 999;
+        data_.distance_phi = 999;
+
+        for (auto hit = gemRecHits->begin(); hit != gemRecHits->end(); hit++){
+          if ( (hit)->geographicalId().det() == DetId::Detector::Muon && (hit)->geographicalId().subdetId() == MuonSubdetId::GEM){
+            GEMDetId gemid((hit)->geographicalId());
+            const auto& etaPart = GEMGeometry_->etaPartition(gemid);
+            if (gemid.layer() == ch->id().layer() and gemid.region() == ch->id().region()){
+              if (pow(pow(data_.prop_CSC_x_GE11 - etaPart->toGlobal((hit)->localPosition()).x(), 2) + pow(data_.prop_CSC_y_GE11 - etaPart->toGlobal((hit)->localPosition()).x(), 2), 0.5) < data_.distance_global){
+                data_.distance_global = pow(pow(data_.prop_CSC_x_GE11 - etaPart->toGlobal((hit)->localPosition()).x(), 2) + pow(data_.prop_CSC_y_GE11 - etaPart->toGlobal((hit)->localPosition()).x(), 2), 0.5);
+                data_.distance_chamber = gemid.chamber() - data_.prop_chamber_GE11;
+                data_.distance_eta = gemid.roll() - data_.prop_roll_GE11;
+                data_.distance_phi = etaPart->toGlobal((hit)->localPosition()).phi() - pos_global_CSC.phi();
+                if (data_.distance_phi > M_PI) data_.distance_phi = data_.distance_phi - 2.*M_PI;
+                if (data_.distance_phi < -1.*M_PI) data_.distance_phi = data_.distance_phi + 2*M_PI;
+              }
+            }
+          }
+        }
+      }
+
+
       std::cout << "Num of rechits = " << rechit_counter << std::endl;
       std::cout << "Num of matches = " << rechit_matches << std::endl;
       num_props++;
