@@ -55,6 +55,9 @@
 
 #include "FWCore/Framework/interface/ConsumesCollector.h"
 
+#include "TrackingTools/TrackRefitter/interface/TrackTransformer.h"
+#include "TrackingTools/Records/interface/TransientRecHitRecord.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 
 using namespace std;
 using namespace edm;
@@ -379,10 +382,15 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   edm::Handle<GEMRecHitCollection> gemRecHits;
   iEvent.getByToken(gemRecHits_, gemRecHits);
 
+  edm::ESHandle<MagneticField> magneticField;
+  edm::ESHandle<GlobalTrackingGeometry> globalGeometry;
+
   edm::Handle<View<reco::Muon> > muons;
   if (! iEvent.getByToken(muons_, muons)) return;
 
   if (muons->size() == 0) return;
+
+
 
   int num_props = 0;
   int muons_with_cscSeg = 0;
@@ -447,6 +455,53 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     //reco::TransientTrack ttTrack_tracker = ttrackBuilder_->build(innerTrack); //tracker to GEM
 
     reco::TransientTrack ttTrack_CSC = ttrackBuilder_->build(muonTrack); //CSC to GEM
+
+
+
+  //////////////
+  //////////////
+
+
+  edm::ESHandle<TransientTrackingRecHitBuilder> theTrackerRecHitBuilder;
+  iSetup.get<TransientRecHitRecord>().get("WithTrackAngle",theTrackerRecHitBuilder);
+  reco::TransientTrack track( *muonTrack, &*magneticField, globalGeometry );
+  TransientTrackingRecHit::ConstRecHitContainer recHitsForRefit;
+
+  bool m_debug = true;
+  //Loop on the muon track and count how many hits you have in tracked and Dt and CSC
+  int iT = 0, iM = 0;
+  int iCSC = 0, iDT = 0;
+  for (trackingRecHit_iterator hit = muonTrack->recHitsBegin(); hit != muonTrack->recHitsEnd(); ++hit) {
+    if((*hit)->isValid()) {
+  DetId hitId  = (*hit)->geographicalId();
+  if ( hitId.det() == DetId::Tracker ) {
+    iT++;
+    if (m_debug) std::cout << "Tracker Hit " << iT << " is found. Add to refit. Dimension: " << (*hit)->dimension() << std::endl;
+    recHitsForRefit.push_back( theTrackerRecHitBuilder->build(&**hit) );
+  } else if ( hitId.det() == DetId::Muon ){
+    iM++;
+    if (m_debug) std::cout << "Muon Hit " << iM << " is found. We do not add muon hits to refit. Dimension: " << (*hit)->dimension() << std::endl;
+    if ( hitId.subdetId() == MuonSubdetId::DT ) {
+      const DTChamberId chamberId(hitId.rawId());
+      iDT++;
+      if (m_debug) std::cout << "Muon Hit in DT wheel " << chamberId.wheel() << " station " << chamberId.station() << " sector " << chamberId.sector() << "." << std::endl;
+    } else if ( hitId.subdetId() == MuonSubdetId::CSC ) {
+      const CSCDetId cscDetId(hitId.rawId());
+      iCSC++;
+      if (m_debug) std::cout << "Muon hit in CSC endcap " << cscDetId.endcap() << " station " << cscDetId.station() << " ring " << cscDetId.ring() << " chamber " << cscDetId.chamber() << "." << std::endl;
+    } else if ( hitId.subdetId() == MuonSubdetId::RPC ) {
+      if (m_debug) std::cout << "Muon Hit in RPC" << std::endl;
+    } else {
+      if (m_debug) std::cout << "Warning! Muon Hit not in DT or CSC or RPC" << std::endl;
+    }
+  }
+    }
+  }
+
+
+
+  //////////////
+  //////////////    
 
     float count = 0;
     for (const auto& ch : GEMGeometry_->etaPartitions()) {
