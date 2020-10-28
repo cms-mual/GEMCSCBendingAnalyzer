@@ -484,12 +484,12 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     if ( hitId.subdetId() == MuonSubdetId::DT ) {
       const DTChamberId chamberId(hitId.rawId());
       iDT++;
-      theMuonRecHitBuilder.push_back( recHitBuilder->build(&**hit) );
+      recHitsForRefit.push_back( theMuonRecHitBuilder->build(&**hit) );
       if (m_debug) std::cout << "Muon Hit in DT wheel " << chamberId.wheel() << " station " << chamberId.station() << " sector " << chamberId.sector() << "." << std::endl;
     } else if ( hitId.subdetId() == MuonSubdetId::CSC ) {
       const CSCDetId cscDetId(hitId.rawId());
       iCSC++;
-      theMuonRecHitBuilder.push_back( recHitBuilder->build(&**hit) );
+      recHitsForRefit.push_back( theMuonRecHitBuilder->build(&**hit) );
       if (m_debug) std::cout << "Muon hit in CSC endcap " << cscDetId.endcap() << " station " << cscDetId.station() << " ring " << cscDetId.ring() << " chamber " << cscDetId.chamber() << "." << std::endl;
     } else if ( hitId.subdetId() == MuonSubdetId::RPC ) {
       if (m_debug) std::cout << "Muon Hit in RPC" << std::endl;
