@@ -382,8 +382,8 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   edm::Handle<GEMRecHitCollection> gemRecHits;
   iEvent.getByToken(gemRecHits_, gemRecHits);
 
-  edm::ESHandle<MagneticField> magneticField;
-  edm::ESHandle<GlobalTrackingGeometry> globalGeometry;
+  //edm::ESHandle<MagneticField> magneticField;
+  //edm::ESHandle<GlobalTrackingGeometry> globalGeometry;
 
   edm::Handle<View<reco::Muon> > muons;
   if (! iEvent.getByToken(muons_, muons)) return;
@@ -462,9 +462,9 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   //////////////
 
 
-  edm::ESHandle<TransientTrackingRecHitBuilder> theTrackerRecHitBuilder;
-  iSetup.get<TransientRecHitRecord>().get("WithTrackAngle",theTrackerRecHitBuilder);
-  reco::TransientTrack track( *muonTrack, &*magneticField, globalGeometry );
+  edm::ESHandle<TransientTrackingRecHitBuilder> theMuonRecHitBuilder;
+  //iSetup.get<TransientRecHitRecord>().get("WithTrackAngle",theTrackerRecHitBuilder);
+  //reco::TransientTrack track( *muonTrack, &*magneticField, globalGeometry );
   TransientTrackingRecHit::ConstRecHitContainer recHitsForRefit;
 
   bool m_debug = true;
@@ -477,17 +477,19 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   if ( hitId.det() == DetId::Tracker ) {
     iT++;
     if (m_debug) std::cout << "Tracker Hit " << iT << " is found. Add to refit. Dimension: " << (*hit)->dimension() << std::endl;
-    recHitsForRefit.push_back( theTrackerRecHitBuilder->build(&**hit) );
+    //recHitsForRefit.push_back( theTrackerRecHitBuilder->build(&**hit) );
   } else if ( hitId.det() == DetId::Muon ){
     iM++;
     if (m_debug) std::cout << "Muon Hit " << iM << " is found. We do not add muon hits to refit. Dimension: " << (*hit)->dimension() << std::endl;
     if ( hitId.subdetId() == MuonSubdetId::DT ) {
       const DTChamberId chamberId(hitId.rawId());
       iDT++;
+      theMuonRecHitBuilder.push_back( recHitBuilder->build(&**hit) );
       if (m_debug) std::cout << "Muon Hit in DT wheel " << chamberId.wheel() << " station " << chamberId.station() << " sector " << chamberId.sector() << "." << std::endl;
     } else if ( hitId.subdetId() == MuonSubdetId::CSC ) {
       const CSCDetId cscDetId(hitId.rawId());
       iCSC++;
+      theMuonRecHitBuilder.push_back( recHitBuilder->build(&**hit) );
       if (m_debug) std::cout << "Muon hit in CSC endcap " << cscDetId.endcap() << " station " << cscDetId.station() << " ring " << cscDetId.ring() << " chamber " << cscDetId.chamber() << "." << std::endl;
     } else if ( hitId.subdetId() == MuonSubdetId::RPC ) {
       if (m_debug) std::cout << "Muon Hit in RPC" << std::endl;
