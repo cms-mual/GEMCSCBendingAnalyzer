@@ -463,9 +463,11 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
 
   edm::ESHandle<TransientTrackingRecHitBuilder> theMuonRecHitBuilder;
-  //iSetup.get<TransientRecHitRecord>().get("WithTrackAngle",theTrackerRecHitBuilder);
+  //iSetup.get<TransientRecHitRecord>().get("WithTrackAngle",theMuonRecHitBuilder);
   //reco::TransientTrack track( *muonTrack, &*magneticField, globalGeometry );
   TransientTrackingRecHit::ConstRecHitContainer recHitsForRefit;
+
+  iSetup.get<TransientRecHitRecord>().get("WithTrackAngle",theMuonRecHitBuilder);
 
   bool m_debug = true;
   //Loop on the muon track and count how many hits you have in tracked and Dt and CSC
