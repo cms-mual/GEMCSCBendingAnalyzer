@@ -34,8 +34,9 @@ process.source = cms.Source("PoolSource",
                         "drop TotemTimingRecHitedmDetSetVector_totemTimingRecHits__reRECO"
                         )
                                 )
-process.source.fileNames.append('file:/eos/cms/store/data/Commissioning2020/Cosmics/RAW-RECO/CosmicSP-PromptReco-v1/000/337/962/00000/640B2662-F6C7-A345-B70A-4A36F35DBFDF.root')
+#process.source.fileNames.append('file:/eos/cms/store/data/Commissioning2020/Cosmics/RAW-RECO/CosmicSP-PromptReco-v1/000/337/962/00000/640B2662-F6C7-A345-B70A-4A36F35DBFDF.root')
 #process.source.fileNames.append('file:/eos/cms/store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-12Nov2019_UL2018-v4/00000/8AAA8B57-D308-1543-B660-BDC6B10E25C7.root')
+process.source.fileNames.append('file:/eos/cms/store/data/Commissioning2020/Cosmics/RAW-RECO/CosmicSP-PromptReco-v1/000/335/685/00000/9450F4E0-BC26-4B42-8087-D6316BEA3303.root')
 #process.source.fileNames.append('root://xrootd-cms.infn.it//store/data/Run2018D/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/322/430/00000/B44676BC-D8B4-E811-9F1D-FA163E987C59.root')
 process.options = cms.untracked.PSet()
 process.TFileService = cms.Service("TFileService", fileName = cms.string("out_ana_40B2662-F6C7-A345-B70A-4A36F35DBFDF.root"))
@@ -46,4 +47,12 @@ process.analyser = cms.EDAnalyzer('analyser',
         muons = cms.InputTag("muons1Leg"),
         vertexCollection = cms.InputTag("offlinePrimaryVerticies")
 )
-process.p = cms.EndPath(process.TrackRefitter*process.analyser)
+
+process.out = cms.OutputModule("PoolOutputModule",
+    fileName = cms.untracked.string("example_edm.root")
+)
+
+process.TrackRefitter.src = "globalCosmicMuons1Leg"
+
+process.p = cms.Path(process.TrackRefitter)#*process.analyser)
+process.ep = cms.EndPath(process.out)
