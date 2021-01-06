@@ -503,6 +503,15 @@ analyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   }
 
 
+  if(recHitsForRefit.size() > 2){
+
+    bool up = recHitsForRefit.back()->globalPosition().y()>0 ? true : false;
+
+    std::cout << "up " << up << std::endl;
+
+  }
+
+
 
   //////////////
   //////////////    
